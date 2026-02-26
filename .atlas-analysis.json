@@ -1,0 +1,76 @@
+{
+  "projectType": "general",
+  "projectName": "nvim-luffy",
+  "projectDescription": "A modern, feature-rich Neovim configuration with LSP, Treesitter, and a One Piece themed dashboard.",
+  "theme": "palm",
+  "primaryColor": "#5ea04f",
+  "lightColor": "#7ec76f",
+  "darkColor": "#4a8a3e",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "introduction",
+          "installation",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Core Configuration",
+        "pages": [
+          "core/options",
+          "core/keymaps",
+          "core/autocommands"
+        ]
+      },
+      {
+        "group": "Plugins",
+        "pages": [
+          "plugins/overview",
+          "plugins/telescope",
+          "plugins/nvim-tree",
+          "plugins/harpoon",
+          "plugins/treesitter",
+          "plugins/nvim-cmp",
+          "plugins/lsp",
+          "plugins/formatting",
+          "plugins/colorschemes",
+          "plugins/alpha",
+          "plugins/git",
+          "plugins/other"
+        ]
+      },
+      {
+        "group": "Customization",
+        "pages": [
+          "customization/adding-plugins",
+          "customization/changing-colorschemes",
+          "customization/custom-keymaps"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "LSP support with Mason for easy language server management",
+    "Fuzzy finding with Telescope",
+    "Quick file navigation with Harpoon",
+    "Syntax highlighting via Treesitter",
+    "Autocompletion with nvim-cmp and LSP integration",
+    "Multiple colorscheme options (Catppuccin, Tokyo Night, Bamboo, Rose Pine, etc.)",
+    "Custom One Piece themed dashboard",
+    "Format on save with Conform.nvim",
+    "Git integration with Neogit and Diffview",
+    "Tmux integration for seamless navigation"
+  ],
+  "publicApiSurface": [
+    "require('leyland.core')",
+    "require('leyland.lazy')",
+    "require('leyland.lsp')",
+    "<leader><leader> - Find files",
+    "<leader>/ - Live grep",
+    "<leader>e - Toggle file explorer",
+    "<leader>h - Harpoon quick menu",
+    "<leader>H - Add file to Harpoon"
+  ]
+}
