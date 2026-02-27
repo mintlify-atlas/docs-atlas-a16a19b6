@@ -1,0 +1,120 @@
+---
+title: Introduction
+description: A modern, feature-rich Neovim configuration with LSP, Treesitter, and a One Piece themed dashboard
+---
+
+# Welcome to nvim-luffy
+
+**nvim-luffy** is a carefully crafted Neovim configuration that combines modern development tools with a touch of One Piece charm. Built for developers who want a powerful, ready-to-use setup without spending hours configuring.
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Get up and running in 5 minutes
+  </Card>
+  <Card title="Installation" icon="download" href="/installation">
+    Step-by-step installation guide
+  </Card>
+  <Card title="Plugins" icon="puzzle-piece" href="/plugins/overview">
+    Explore the plugin ecosystem
+  </Card>
+  <Card title="Customization" icon="palette" href="/customization/adding-plugins">
+    Make it your own
+  </Card>
+</CardGroup>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="LSP Support" icon="code">
+    Out-of-the-box language server support for TypeScript, JavaScript, Python, Lua, and more. Mason makes it easy to install and manage language servers.
+  </Card>
+  <Card title="Fuzzy Finding" icon="magnifying-glass">
+    Lightning-fast file and text search with Telescope. Find anything in your project instantly.
+  </Card>
+  <Card title="Quick Navigation" icon="compass">
+    Harpoon lets you mark and jump between your most important files with a single keystroke.
+  </Card>
+  <Card title="Smart Completion" icon="brain">
+    Intelligent autocompletion powered by nvim-cmp with LSP, snippets, buffer, and path sources.
+  </Card>
+  <Card title="Syntax Highlighting" icon="highlighter">
+    Advanced syntax highlighting via Treesitter for accurate, context-aware code coloring.
+  </Card>
+  <Card title="Beautiful Themes" icon="palette">
+    Choose from 6 carefully selected colorschemes: Bamboo, Catppuccin, Tokyo Night, Rose Pine, and more.
+  </Card>
+  <Card title="Git Integration" icon="git">
+    Seamless Git workflows with Neogit and Diffview for staging, committing, and reviewing changes.
+  </Card>
+  <Card title="Format on Save" icon="wand-magic-sparkles">
+    Automatic code formatting with support for Prettier, Stylua, Black, and more via Conform.nvim.
+  </Card>
+</CardGroup>
+
+## What Makes It Special?
+
+### 🏴‍☠️ One Piece Themed Dashboard
+
+Start your day with a custom Luffy ASCII art dashboard that greets you with the iconic quote: *"Maybe the One Piece was the commits we made along the way."*
+
+### 🚀 Ready to Use
+
+No need to spend hours configuring. Clone, install, and start coding immediately. Everything is pre-configured with sensible defaults.
+
+### 🎯 Minimal & Focused
+
+Clean interface with no statusline clutter. Focus on what matters: your code. The minimal winbar shows only essential information.
+
+### 🔧 Easy to Customize
+
+Well-organized file structure makes it simple to add plugins, change colorschemes, or customize keymaps. Everything is modular and documented.
+
+## Tech Stack
+
+- **Plugin Manager**: [lazy.nvim](https://github.com/folke/lazy.nvim) - Fast, modern plugin manager
+- **LSP**: [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) + [Mason](https://github.com/williamboman/mason.nvim)
+- **Completion**: [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
+- **Fuzzy Finder**: [Telescope](https://github.com/nvim-telescope/telescope.nvim)
+- **Syntax**: [Treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
+- **Git**: [Neogit](https://github.com/NeogitOrg/neogit) + [Diffview](https://github.com/sindrets/diffview.nvim)
+
+## Quick Keymaps
+
+Here are some essential keymaps to get you started (Leader key is `Space`):
+
+| Keymap | Action | Plugin |
+|--------|--------|--------|
+| `<leader><leader>` | Find files | Telescope |
+| `<leader>/` | Search in project | Telescope |
+| `<leader>e` | Toggle file explorer | nvim-tree |
+| `<leader>h` | Harpoon menu | Harpoon |
+| `<leader>H` | Add file to Harpoon | Harpoon |
+| `gd` | Go to definition | LSP |
+| `gr` | Show references | LSP |
+| `<leader>ca` | Code actions | LSP |
+
+<Tip>
+  Press `<leader>fk` to open Telescope's keymap finder and discover all available keymaps!
+</Tip>
+
+## Philosophy
+
+This configuration is built on three principles:
+
+1. **Productivity First**: Every plugin and keymap is chosen to make you more productive
+2. **Learn by Doing**: Well-commented code helps you understand what's happening
+3. **Your Config, Your Way**: Easy to customize and extend to match your workflow
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Install" icon="download" href="/installation">
+    Get nvim-luffy installed on your system
+  </Card>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Take a 5-minute tour of the essentials
+  </Card>
+  <Card title="Core Config" icon="gear" href="/core/options">
+    Learn about the core configuration
+  </Card>
+</CardGroup>

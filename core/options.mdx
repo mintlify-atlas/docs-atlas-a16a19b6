@@ -1,0 +1,201 @@
+---
+title: "Vim Options"
+description: "Core Neovim settings and options that define editor behavior, appearance, and functionality"
+---
+
+# Vim Options
+
+This page documents all Vim options configured in `lua/leyland/core/options.lua`. These settings control the fundamental behavior of your Neovim editor.
+
+## File Explorer
+
+```lua
+vim.cmd("let g:netrw_liststyle = 3")
+```
+
+Sets netrw (Neovim's built-in file explorer) to tree view style, providing a hierarchical directory structure that's easier to navigate.
+
+## Line Numbers
+
+| Option | Value | Purpose |
+|--------|-------|----------|
+| `number` | `true` | Shows absolute line numbers in the gutter |
+| `relativenumber` | `true` | Shows relative line numbers for easier motion commands (e.g., `5j` to move 5 lines down) |
+
+<Note>
+Combining `number` and `relativenumber` displays the absolute number on the current line and relative numbers on all other lines - the best of both worlds for navigation.
+</Note>
+
+## Interface Elements
+
+<Accordion title="Command Line & Status Bar">
+
+```lua
+opt.cmdheight = 0
+opt.laststatus = 0
+opt.winbar = "%f %h%m%r%=%l,%c %P"
+```
+
+- **cmdheight = 0**: Hides the command line when not in use, maximizing screen space for code
+- **laststatus = 0**: Completely hides the statusline, embracing a minimal interface
+- **winbar**: Displays a window-specific status bar showing:
+  - `%f` - File name
+  - `%h%m%r` - Help, modified, and readonly flags
+  - `%=` - Separator (right-align following items)
+  - `%l,%c` - Line and column number
+  - `%P` - Percentage through file
+
+</Accordion>
+
+## Tabs & Indentation
+
+```lua
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.expandtab = true
+opt.autoindent = true
+```
+
+<CodeGroup>
+
+```lua tabstop
+-- Number of spaces a <Tab> counts for
+opt.tabstop = 2
+```
+
+```lua shiftwidth
+-- Number of spaces for each indentation level
+opt.shiftwidth = 2
+```
+
+```lua expandtab
+-- Convert tabs to spaces (prevents mixed indentation)
+opt.expandtab = true
+```
+
+```lua autoindent
+-- Copy indent from current line when starting a new line
+opt.autoindent = true
+```
+
+</CodeGroup>
+
+<Tip>
+These settings enforce a consistent 2-space indentation standard across your codebase. The `expandtab` option ensures you're always using spaces, avoiding the classic tabs vs spaces debate.
+</Tip>
+
+## Text Wrapping
+
+```lua
+opt.wrap = false
+```
+
+Disables line wrapping. Long lines extend beyond the screen edge rather than wrapping to the next line. This is preferred for code as it maintains the file's actual structure and works better with horizontal scrolling.
+
+## Search Settings
+
+```lua
+opt.ignorecase = true
+opt.smartcase = true
+```
+
+<Accordion title="Smart Case-Insensitive Search">
+
+These two options work together to provide intelligent search behavior:
+
+- **ignorecase**: Makes searches case-insensitive by default (e.g., `/foo` matches "Foo", "foo", "FOO")
+- **smartcase**: Overrides `ignorecase` when your search contains uppercase letters (e.g., `/Foo` only matches "Foo")
+
+**Examples:**
+- `/function` → matches "function", "Function", "FUNCTION"
+- `/Function` → matches only "Function"
+- `/myVariable` → matches only "myVariable" (case-sensitive due to capital V)
+
+</Accordion>
+
+## File Management
+
+```lua
+opt.swapfile = false
+```
+
+Disables swap files completely. Swap files are Vim's crash recovery mechanism, but they can clutter your workspace and cause issues with version control. Disable this if you:
+- Have reliable auto-save mechanisms
+- Use version control religiously
+- Prefer a cleaner working directory
+
+<Note>
+Without swap files, you lose Vim's built-in crash recovery. Make sure you have alternative backup strategies in place.
+</Note>
+
+## Visual Settings
+
+```lua
+opt.background = "dark"
+opt.signcolumn = "yes"
+```
+
+| Option | Value | Purpose |
+|--------|-------|----------|
+| `background` | `"dark"` | Tells colorschemes to use their dark variant |
+| `signcolumn` | `"yes"` | Always shows the sign column (used for git signs, diagnostics, breakpoints) to prevent text shifting |
+
+<Tip>
+Keeping `signcolumn` always visible prevents annoying horizontal text shifts when diagnostics or git signs appear and disappear.
+</Tip>
+
+## Backspace Behavior
+
+```lua
+opt.backspace = "indent,eol,start"
+```
+
+Makes backspace behave intuitively in insert mode:
+- **indent**: Delete indentation
+- **eol**: Delete across line breaks
+- **start**: Delete before the start position of insert mode
+
+## Clipboard Integration
+
+```lua
+opt.clipboard:append("unnamedplus")
+```
+
+Integrates Neovim with your system clipboard. Yank and paste operations automatically use the system clipboard, allowing seamless copying between Neovim and other applications.
+
+<Note>
+The `unnamedplus` register refers to the system clipboard on most systems. This means `yy` copies to your system clipboard, and `p` can paste from it.
+</Note>
+
+## Window Splitting
+
+```lua
+opt.splitright = true
+opt.splitbelow = true
+```
+
+Controls where new splits appear:
+- **splitright**: Vertical splits open to the right of the current window
+- **splitbelow**: Horizontal splits open below the current window
+
+This feels more natural and follows the reading direction (left-to-right, top-to-bottom).
+
+## LSP Configuration
+
+```lua
+vim.lsp.set_log_level("error")
+```
+
+Configures LSP (Language Server Protocol) to only log errors, filtering out warnings and info messages. This reduces noise in the LSP log file and improves performance.
+
+<Tip>
+If you're debugging LSP issues, temporarily change this to `"debug"` to see all LSP communication.
+</Tip>
+
+## Summary
+
+These options create a minimal, efficient Neovim environment focused on:
+- **Clean interface**: No statusline, hidden command line, persistent winbar
+- **Smart defaults**: Relative numbers, case-smart search, intuitive splits
+- **Modern workflow**: System clipboard integration, no swap files
+- **Consistent formatting**: 2-space indentation, no line wrapping

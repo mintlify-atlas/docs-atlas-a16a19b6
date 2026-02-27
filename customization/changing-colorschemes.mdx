@@ -1,0 +1,459 @@
+---
+title: Changing Colorschemes
+description: Learn how to change, customize, and add new colorschemes to nvim-luffy
+---
+
+## Overview
+
+nvim-luffy comes with several pre-installed colorschemes. This guide shows you how to switch between them, customize their settings, and add new ones.
+
+## Pre-installed Colorschemes
+
+The following colorschemes are available out of the box (see `lua/leyland/plugins/colorscheme.lua:1-41`):
+
+- **bamboo** (default) - A warm, nature-inspired theme
+- **catppuccin** - Soothing pastel theme
+- **tokyonight** - A clean, dark theme inspired by Tokyo's night
+- **modus-themes** - Highly accessible themes
+- **onedark** - Atom's iconic One Dark theme
+- **rose-pine** - Soho vibes for Neovim
+
+## Changing the Active Colorscheme
+
+### Quick Change (Temporary)
+
+To try a colorscheme temporarily, use the `:colorscheme` command in Neovim:
+
+```vim
+:colorscheme catppuccin
+:colorscheme tokyonight
+:colorscheme rose-pine
+```
+
+<Tip>
+Use tab completion after typing `:colorscheme ` to see all available colorschemes.
+</Tip>
+
+### Permanent Change
+
+To set a colorscheme permanently, edit `lua/leyland/plugins/colorscheme.lua:35-38`:
+
+<Steps>
+  <Step title="Open the colorscheme configuration">
+    Open `lua/leyland/plugins/colorscheme.lua` in Neovim.
+  </Step>
+
+  <Step title="Find the config function">
+    Locate the `config` function in the last colorscheme plugin (currently rose-pine):
+
+    ```lua
+    config = function()
+      -- Set your default theme here
+      vim.cmd.colorscheme("bamboo")
+    end,
+    ```
+  </Step>
+
+  <Step title="Change the colorscheme name">
+    Replace `"bamboo"` with your preferred colorscheme:
+
+    ```lua
+    config = function()
+      -- Set your default theme here
+      vim.cmd.colorscheme("tokyonight")
+    end,
+    ```
+  </Step>
+
+  <Step title="Save and restart">
+    Save the file and restart Neovim to apply the change.
+  </Step>
+</Steps>
+
+## Customizing Colorscheme Settings
+
+Many colorschemes offer customization options. Here's how to configure them:
+
+### Example: Configuring Tokyo Night
+
+<CodeGroup>
+```lua Basic Configuration
+return {
+  {
+    "folke/tokyonight.nvim",
+    priority = 1000,
+    config = function()
+      require("tokyonight").setup({
+        style = "night", -- storm, moon, night, day
+        transparent = false,
+        terminal_colors = true,
+        styles = {
+          comments = { italic = true },
+          keywords = { italic = true },
+          functions = {},
+          variables = {},
+        },
+      })
+      vim.cmd.colorscheme("tokyonight")
+    end,
+  },
+}
+```
+
+```lua Advanced Configuration
+return {
+  {
+    "folke/tokyonight.nvim",
+    priority = 1000,
+    config = function()
+      require("tokyonight").setup({
+        style = "storm",
+        transparent = true,
+        terminal_colors = true,
+        styles = {
+          comments = { italic = true },
+          keywords = { italic = true, bold = true },
+          functions = { bold = true },
+          variables = {},
+          sidebars = "dark",
+          floats = "dark",
+        },
+        sidebars = { "qf", "help", "terminal" },
+        hide_inactive_statusline = false,
+        dim_inactive = false,
+        lualine_bold = true,
+        on_colors = function(colors)
+          colors.hint = colors.orange
+          colors.error = "#ff0000"
+        end,
+        on_highlights = function(highlights, colors)
+          highlights.TSKeyword = {
+            fg = colors.cyan,
+            bold = true,
+          }
+        end,
+      })
+      vim.cmd.colorscheme("tokyonight")
+    end,
+  },
+}
+```
+</CodeGroup>
+
+### Example: Configuring Catppuccin
+
+```lua
+return {
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+    config = function()
+      require("catppuccin").setup({
+        flavour = "mocha", -- latte, frappe, macchiato, mocha
+        transparent_background = false,
+        term_colors = true,
+        dim_inactive = {
+          enabled = false,
+          shade = "dark",
+          percentage = 0.15,
+        },
+        styles = {
+          comments = { "italic" },
+          conditionals = { "italic" },
+          loops = {},
+          functions = { "bold" },
+          keywords = { "italic" },
+          strings = {},
+          variables = {},
+          numbers = {},
+          booleans = {},
+          properties = {},
+          types = {},
+          operators = {},
+        },
+        integrations = {
+          cmp = true,
+          gitsigns = true,
+          nvimtree = true,
+          treesitter = true,
+          telescope = true,
+          harpoon = true,
+          mason = true,
+        },
+      })
+      vim.cmd.colorscheme("catppuccin")
+    end,
+  },
+}
+```
+
+### Example: Configuring OneDark
+
+The onedark configuration is already partially set up in `lua/leyland/plugins/colorscheme.lua:22-30`. To activate it:
+
+```lua
+return {
+  {
+    "navarasu/onedark.nvim",
+    priority = 1000,
+    config = function()
+      require("onedark").setup({
+        style = "deep", -- dark, darker, cool, deep, warm, warmer
+        transparent = false,
+        term_colors = true,
+        ending_tildes = false,
+        cmp_itemkind_reverse = false,
+        code_style = {
+          comments = "italic",
+          keywords = "bold",
+          functions = "none",
+          strings = "none",
+          variables = "none",
+        },
+        diagnostics = {
+          darker = true,
+          undercurl = true,
+          background = true,
+        },
+      })
+      require("onedark").load()
+    end,
+  },
+}
+```
+
+## Adding a New Colorscheme
+
+<Steps>
+  <Step title="Add the plugin specification">
+    Add the new colorscheme to `lua/leyland/plugins/colorscheme.lua`. For example, to add Gruvbox:
+
+    ```lua
+    return {
+      -- ... existing colorschemes ...
+      {
+        "ellisonleao/gruvbox.nvim",
+        priority = 1000,
+        config = function()
+          require("gruvbox").setup({
+            contrast = "hard", -- soft, medium, hard
+            transparent_mode = false,
+          })
+        end,
+      },
+      -- Keep the colorscheme activation in the last plugin
+      {
+        "rose-pine/neovim",
+        name = "rose-pine",
+        priority = 1000,
+        config = function()
+          vim.cmd.colorscheme("gruvbox")
+        end,
+      },
+    }
+    ```
+  </Step>
+
+  <Step title="Restart Neovim">
+    Restart Neovim. lazy.nvim will automatically install the new colorscheme.
+  </Step>
+
+  <Step title="Verify installation">
+    Run `:Lazy` to verify the colorscheme plugin is installed, then try `:colorscheme gruvbox`.
+  </Step>
+</Steps>
+
+<Note>
+The `priority = 1000` option ensures colorschemes load before other plugins that might depend on them.
+</Note>
+
+## Popular Colorschemes to Try
+
+Here are some popular colorschemes you can add:
+
+<CodeGroup>
+```lua Gruvbox
+{
+  "ellisonleao/gruvbox.nvim",
+  priority = 1000,
+  config = function()
+    require("gruvbox").setup({
+      contrast = "hard",
+    })
+  end,
+}
+```
+
+```lua Nord
+{
+  "shaunsingh/nord.nvim",
+  priority = 1000,
+  config = function()
+    vim.g.nord_contrast = true
+    vim.g.nord_borders = false
+    vim.g.nord_disable_background = false
+    vim.g.nord_italic = false
+  end,
+}
+```
+
+```lua Kanagawa
+{
+  "rebelot/kanagawa.nvim",
+  priority = 1000,
+  config = function()
+    require("kanagawa").setup({
+      theme = "wave", -- wave, dragon, lotus
+      background = {
+        dark = "wave",
+        light = "lotus",
+      },
+    })
+  end,
+}
+```
+
+```lua Nightfox
+{
+  "EdenEast/nightfox.nvim",
+  priority = 1000,
+  config = function()
+    require("nightfox").setup({
+      options = {
+        styles = {
+          comments = "italic",
+          keywords = "bold",
+          types = "italic,bold",
+        },
+      },
+    })
+  end,
+}
+```
+</CodeGroup>
+
+## Multiple Colorscheme File Structure
+
+The current structure in `lua/leyland/plugins/colorscheme.lua` returns an array of plugin specifications:
+
+```lua
+return {
+  { -- First colorscheme
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+  },
+  { -- Second colorscheme
+    "folke/tokyonight.nvim",
+    priority = 1000,
+  },
+  { -- Last colorscheme with activation
+    "rose-pine/neovim",
+    name = "rose-pine",
+    priority = 1000,
+    config = function()
+      -- Only set colorscheme in the last plugin's config
+      vim.cmd.colorscheme("bamboo")
+    end,
+  },
+}
+```
+
+<Warning>
+Only add `vim.cmd.colorscheme()` in the **last** plugin's config function. This ensures all colorschemes are loaded before one is activated.
+</Warning>
+
+## Transparent Background
+
+Many colorschemes support transparent backgrounds. Here's how to enable it:
+
+```lua
+return {
+  {
+    "folke/tokyonight.nvim",
+    priority = 1000,
+    config = function()
+      require("tokyonight").setup({
+        transparent = true, -- Enable transparent background
+        styles = {
+          sidebars = "transparent",
+          floats = "transparent",
+        },
+      })
+      vim.cmd.colorscheme("tokyonight")
+    end,
+  },
+}
+```
+
+<Tip>
+For terminal transparency to work, your terminal emulator must also support transparency and have it enabled.
+</Tip>
+
+## Per-Filetype Colorschemes
+
+You can automatically change colorschemes based on filetype using autocommands:
+
+```lua
+return {
+  {
+    "your-colorscheme/plugin",
+    priority = 1000,
+    config = function()
+      -- Set default colorscheme
+      vim.cmd.colorscheme("tokyonight")
+      
+      -- Create autocommand group
+      local augroup = vim.api.nvim_create_augroup("ColorschemeByFiletype", { clear = true })
+      
+      -- Change to gruvbox for Markdown files
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "markdown",
+        group = augroup,
+        callback = function()
+          vim.cmd.colorscheme("gruvbox")
+        end,
+      })
+      
+      -- Change to rose-pine for Lua files
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "lua",
+        group = augroup,
+        callback = function()
+          vim.cmd.colorscheme("rose-pine")
+        end,
+      })
+    end,
+  },
+}
+```
+
+## Troubleshooting
+
+### Colorscheme Not Found
+
+1. Verify the plugin is installed: run `:Lazy` and check if it's listed
+2. Run `:Lazy install` to install missing plugins
+3. Check the colorscheme name matches the plugin's documentation
+4. Restart Neovim after installation
+
+### Colors Look Wrong
+
+1. Ensure your terminal supports true color (24-bit color)
+2. Add this to your terminal configuration or shell rc file:
+   ```bash
+   export TERM=xterm-256color
+   ```
+3. Check if `termguicolors` is enabled (it should be in nvim-luffy)
+
+### Transparent Background Not Working
+
+1. Enable transparency in your terminal emulator first
+2. Ensure the colorscheme's `transparent` option is set to `true`
+3. Some colorschemes use different option names (check the plugin's documentation)
+
+## Next Steps
+
+- [Adding Plugins](/customization/adding-plugins) - Learn how to add new plugins
+- [Custom Keymaps](/customization/custom-keymaps) - Add your own keyboard shortcuts

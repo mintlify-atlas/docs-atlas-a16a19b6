@@ -1,0 +1,386 @@
+---
+title: Other Plugins
+description: Autopairs, Flash navigation, Snacks utilities, and Trouble diagnostics
+---
+
+## Overview
+
+This page covers several utility plugins that enhance your editing experience:
+
+- **Autopairs** - Automatic bracket and quote pairing
+- **Flash** - Lightning-fast cursor movement
+- **Snacks** - Smooth scrolling utilities
+- **Trouble** - Pretty diagnostics list
+
+## Autopairs
+
+### Overview
+
+Automatically inserts matching brackets, quotes, and other pairs as you type. Integrates with nvim-cmp for smart completion behavior.
+
+### Features
+
+- Auto-closes brackets: `(`, `[`, `{`
+- Auto-closes quotes: `"`, `'`, `` ` ``
+- Smart deletion: Delete both pairs with single backspace
+- Treesitter integration: Context-aware pairing
+- Completion integration: Works seamlessly with nvim-cmp
+
+### Configuration
+
+Autopairs is configured with Treesitter support:
+
+```lua
+autopairs.setup({
+  check_ts = true, -- enable treesitter
+  ts_config = {
+    lua = { "string" },              -- don't pair in lua strings
+    javascript = { "template_string" }, -- don't pair in template strings
+    java = false,                    -- disable treesitter for java
+  },
+})
+```
+
+<Note>
+  Configuration location: `lua/leyland/plugins/autopairs.lua:12-19`
+</Note>
+
+### Treesitter Integration
+
+Autopairs respects Treesitter context:
+
+- **Lua**: Won't auto-pair inside string nodes
+- **JavaScript**: Won't auto-pair inside template strings
+- **Java**: Treesitter checking disabled
+
+### Completion Integration
+
+Autopairs integrates with nvim-cmp (configured in `lua/leyland/plugins/autopairs.lua:21-28`):
+
+```lua
+local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+local cmp = require("cmp")
+
+-- Trigger autopairs after completion
+cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+```
+
+**Example**: When you complete `function` and press Enter, it automatically adds `()` with cursor inside.
+
+### Behavior Examples
+
+| You Type | Result | Cursor Position |
+|----------|--------|----------------|
+| `(` | `()` | Between parentheses |
+| `[` | `[]` | Between brackets |
+| `"` | `""` | Between quotes |
+| `{<Enter>` | `{\n  \n}` | Indented inside |
+
+### Disabling Autopairs
+
+To temporarily disable:
+
+```vim
+:lua require('nvim-autopairs').disable()
+```
+
+To re-enable:
+
+```vim
+:lua require('nvim-autopairs').enable()
+```
+
+## Flash
+
+### Overview
+
+Flash provides lightning-fast cursor movement with minimal keystrokes. Jump to any location on screen by typing just 1-2 characters.
+
+### Keymaps
+
+| Mode | Keymap | Description | Location |
+|------|--------|-------------|----------|
+| Normal, Visual, Operator | `s` | Flash jump | `lua/leyland/plugins/flash.lua:20` |
+| Normal, Visual, Operator | `S` | Flash Treesitter | `lua/leyland/plugins/flash.lua:21` |
+| Operator | `r` | Remote Flash | `lua/leyland/plugins/flash.lua:22` |
+| Operator, Visual | `R` | Treesitter Search | `lua/leyland/plugins/flash.lua:23` |
+| Command | `<C-s>` | Toggle Flash Search | `lua/leyland/plugins/flash.lua:24` |
+| Normal, Visual, Operator | `<C-Space>` | Incremental Selection | `lua/leyland/plugins/flash.lua:26` |
+
+### Usage Examples
+
+<Steps>
+  <Step title="Basic Jump">
+    1. Press `s` in normal mode
+    2. Type 1-2 characters of your target location
+    3. Labels appear on matching locations
+    4. Type the label to jump
+  </Step>
+  
+  <Step title="Treesitter Jump">
+    Press `S` to jump to Treesitter nodes (functions, classes, etc.)
+  </Step>
+  
+  <Step title="Incremental Selection">
+    1. Press `<C-Space>` to start selecting
+    2. Press `<C-Space>` again to expand selection to next node
+    3. Press `<BS>` to shrink selection
+  </Step>
+</Steps>
+
+### Flash Modes
+
+#### Normal Flash (`s`)
+
+Jump to any visible text:
+
+```plaintext
+Press s → Type "fu" → Labels appear on all "fu" matches → Type label → Jump!
+```
+
+#### Treesitter Flash (`S`)
+
+Jump to semantic units:
+
+- Function definitions
+- Class declarations
+- Variable assignments
+- Control structures
+
+#### Remote Flash (`r`)
+
+Use in operator mode to act on distant text:
+
+```plaintext
+Press d → Press r → Flash labels appear → Select target → Delete to target
+```
+
+### Character Actions
+
+Flash is configured with character navigation:
+
+```lua
+modes = {
+  char = {
+    char_actions = function(motion)
+      return {
+        [";"] = "next",
+        [","] = "prev",
+      }
+    end,
+  },
+}
+```
+
+- After using `f`, `F`, `t`, or `T`, press `;` for next match
+- Press `,` for previous match
+
+<Tip>
+  Flash is much faster than using `10j` or repeatedly pressing `j`. Just press `s` and jump directly to your target!
+</Tip>
+
+## Snacks
+
+### Overview
+
+Snacks provides smooth scrolling animations for a more pleasant editing experience.
+
+### Features
+
+- Smooth scrolling with `<C-d>`, `<C-u>`, `<C-f>`, `<C-b>`
+- Configurable animation speed
+- Linear easing for predictable motion
+- Enabled globally
+
+### Configuration
+
+Snacks is configured with smooth scroll settings:
+
+```lua
+return {
+  "folke/snacks.nvim",
+  priority = 1000,
+  lazy = false,  -- Loads immediately
+  opts = {
+    scroll = {
+      enabled = true,
+      animate = {
+        duration = { step = 10, total = 100 },
+        easing = "linear",
+      },
+    },
+  },
+}
+```
+
+<Note>
+  Configuration location: `lua/leyland/plugins/snacks.lua:1-14`
+</Note>
+
+### Animation Settings
+
+- **Step duration**: 10ms per frame
+- **Total duration**: 100ms for complete scroll
+- **Easing**: Linear (constant speed)
+
+### Customizing Speed
+
+To make scrolling faster:
+
+```lua
+animate = {
+  duration = { step = 5, total = 50 },  -- Faster
+}
+```
+
+To make scrolling slower:
+
+```lua
+animate = {
+  duration = { step = 15, total = 200 }, -- Slower
+}
+```
+
+### Easing Options
+
+Change the `easing` value for different animation styles:
+
+- `"linear"` - Constant speed (default)
+- `"quadratic"` - Accelerate/decelerate
+- `"cubic"` - More dramatic acceleration
+
+### Disabling Smooth Scroll
+
+To disable smooth scrolling:
+
+```lua
+opts = {
+  scroll = {
+    enabled = false,
+  },
+}
+```
+
+## Trouble
+
+### Overview
+
+Trouble provides a beautiful list for diagnostics, references, quickfix items, and more. It's like a enhanced quickfix window with better formatting and navigation.
+
+### Opening Trouble
+
+| Keymap | Description | Location |
+|--------|-------------|----------|
+| `<leader>xx` | Toggle Trouble diagnostics | `lua/leyland/plugins/trouble.lua:6` |
+
+### Features
+
+- Pretty list of diagnostics (errors, warnings, hints)
+- Group by file
+- Jump to diagnostic location
+- Auto-update as you edit
+- Icons and highlighting
+
+### Using Trouble
+
+<Steps>
+  <Step title="Open Diagnostics">
+    Press `<leader>xx` to open Trouble with all workspace diagnostics
+  </Step>
+  
+  <Step title="Navigate">
+    Use `j/k` to navigate through diagnostics
+  </Step>
+  
+  <Step title="Jump to Issue">
+    Press `<Enter>` to jump to the diagnostic location
+  </Step>
+  
+  <Step title="Close">
+    Press `q` or `<leader>xx` again to close
+  </Step>
+</Steps>
+
+### Trouble Navigation
+
+When Trouble is open:
+
+| Key | Action |
+|-----|--------|
+| `j/k` | Next/previous item |
+| `<Enter>` | Jump to location |
+| `<Tab>` | Jump and stay in Trouble |
+| `o` | Jump and close Trouble |
+| `q` | Close Trouble |
+| `zo` | Open fold |
+| `zc` | Close fold |
+| `za` | Toggle fold |
+
+### Available Commands
+
+Trouble provides several commands:
+
+```vim
+:Trouble diagnostics toggle      " Toggle diagnostics list
+:Trouble diagnostics open        " Open diagnostics
+:Trouble diagnostics close       " Close diagnostics
+:Trouble symbols toggle          " Toggle document symbols
+:Trouble lsp toggle              " Toggle LSP references
+:Trouble loclist toggle          " Toggle location list
+:Trouble quickfix toggle         " Toggle quickfix list
+```
+
+### Integration with LSP
+
+Trouble works seamlessly with LSP diagnostics:
+
+- Shows errors from all LSP servers
+- Updates in real-time as you edit
+- Groups diagnostics by file
+- Displays diagnostic messages and codes
+
+<Tip>
+  Use Trouble alongside the LSP keymap `<leader>D` for buffer diagnostics, or `<leader>xx` for workspace-wide diagnostics.
+</Tip>
+
+### Configuration
+
+Trouble uses default configuration:
+
+```lua
+return {
+  "folke/trouble.nvim",
+  dependencies = { "nvim-tree/nvim-web-devicons" },
+  opts = {},  -- Uses defaults
+}
+```
+
+For custom configuration, add options to the `opts` table:
+
+```lua
+opts = {
+  position = "bottom",        -- Position: bottom, top, left, right
+  height = 10,                -- Height of window
+  width = 50,                 -- Width if position is left/right
+  icons = true,               -- Use devicons
+  mode = "workspace_diagnostics", -- Default mode
+  fold_open = "",            -- Icon for open fold
+  fold_closed = "",          -- Icon for closed fold
+}
+```
+
+## Summary
+
+These utility plugins enhance your editing workflow:
+
+- **Autopairs**: Less typing, automatic bracket completion
+- **Flash**: Faster navigation, jump anywhere instantly
+- **Snacks**: Smoother scrolling, more pleasant motion
+- **Trouble**: Better diagnostics, clearer error viewing
+
+## Configuration Files
+
+- `lua/leyland/plugins/autopairs.lua` - Autopairs configuration
+- `lua/leyland/plugins/flash.lua` - Flash configuration
+- `lua/leyland/plugins/snacks.lua` - Snacks configuration
+- `lua/leyland/plugins/trouble.lua` - Trouble configuration

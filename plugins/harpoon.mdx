@@ -1,0 +1,328 @@
+---
+title: "Harpoon"
+description: "Lightning-fast navigation between your most important files"
+---
+
+Harpoon is a quick file navigation plugin that lets you mark files and jump between them instantly. Think of it as bookmarks on steroids - perfect for workflows where you frequently switch between specific files.
+
+## Overview
+
+Harpoon provides:
+- Mark up to 9 files for instant access
+- Jump to marked files with a single keystroke
+- Persistent marks across sessions
+- Quick menu to view and manage marked files
+- Full-width menu for better visibility
+
+<Note>
+Harpoon 2 is configured in nvim-luffy with automatic saving when toggling the menu.
+</Note>
+
+## Philosophy
+
+Unlike traditional file navigation where you search for files, Harpoon is about **intentional navigation**. You mark the files you're actively working on and jump between them without any searching or fuzzy finding.
+
+## Keymaps
+
+### Core Actions
+
+| Keymap | Description |
+|--------|-------------|
+| `<leader>H` | Mark current file (add to Harpoon list) |
+| `<leader>h` | Toggle Harpoon quick menu |
+
+### Quick Navigation
+
+| Keymap | Description |
+|--------|-------------|
+| `<leader>1` | Jump to file 1 |
+| `<leader>2` | Jump to file 2 |
+| `<leader>3` | Jump to file 3 |
+| `<leader>4` | Jump to file 4 |
+| `<leader>5` | Jump to file 5 |
+| `<leader>6` | Jump to file 6 |
+| `<leader>7` | Jump to file 7 |
+| `<leader>8` | Jump to file 8 |
+| `<leader>9` | Jump to file 9 |
+
+### Menu Navigation
+
+While in the Harpoon menu:
+
+| Keymap | Description |
+|--------|-------------|
+| `<CR>` | Jump to selected file |
+| `dd` | Remove file from list |
+| `j/k` | Navigate up/down |
+| `q` | Close menu |
+| `<Esc>` | Close menu |
+
+## Usage Examples
+
+### Basic Workflow
+
+<Steps>
+  <Step title="Mark important files">
+    Open a file you're working on and press `<leader>H` to mark it. Repeat for other files you need quick access to.
+    
+    ```bash
+    # Example: Working on a feature
+    # Mark: UserController.ts
+    # Mark: UserService.ts  
+    # Mark: UserModel.ts
+    # Mark: user.test.ts
+    ```
+  </Step>
+  
+  <Step title="Jump between files">
+    Use `<leader>1`, `<leader>2`, etc. to instantly jump to your marked files.
+    
+    No searching, no fuzzy finding - just instant navigation.
+  </Step>
+  
+  <Step title="View your marks">
+    Press `<leader>h` to see all your marked files in the quick menu.
+  </Step>
+</Steps>
+
+### Real-World Example: Feature Development
+
+<Steps>
+  <Step title="Set up your workspace">
+    You're building a user authentication feature. Mark these files:
+    
+    1. `<leader>H` on `AuthController.ts`
+    2. `<leader>H` on `AuthService.ts`
+    3. `<leader>H` on `auth.middleware.ts`
+    4. `<leader>H` on `auth.test.ts`
+  </Step>
+  
+  <Step title="Navigate instantly">
+    - Working on controller → Press `<leader>1`
+    - Need to check service → Press `<leader>2`
+    - Update middleware → Press `<leader>3`
+    - Run tests → Press `<leader>4`
+  </Step>
+  
+  <Step title="Adjust as needed">
+    Open the menu with `<leader>h` to reorder files or remove ones you don't need anymore.
+  </Step>
+</Steps>
+
+<Tip>
+Harpoon works best when you mark files at the start of a work session and keep them for the duration of your task.
+</Tip>
+
+### Managing Your Marks
+
+<Steps>
+  <Step title="Open the menu">
+    Press `<leader>h` to see all marked files.
+  </Step>
+  
+  <Step title="Remove unwanted marks">
+    Navigate to a file and press `dd` to remove it from the list.
+  </Step>
+  
+  <Step title="Reorder marks">
+    In the menu, you can manually edit the list. The order determines which number key opens which file.
+  </Step>
+</Steps>
+
+## Configuration
+
+The Harpoon configuration is located at:
+```
+~/.config/nvim/lua/leyland/plugins/harpoon.lua
+```
+
+### Current Settings
+
+```lua lua/leyland/plugins/harpoon.lua
+return {
+  "ThePrimeagen/harpoon",
+  branch = "harpoon2",
+  opts = {
+    menu = {
+      width = vim.api.nvim_win_get_width(0) - 4,
+    },
+    settings = {
+      save_on_toggle = true,
+    },
+  },
+}
+```
+
+### Key Configuration Options
+
+**Menu Settings:**
+- Width: Full window width minus 4 columns
+- Auto-save: Enabled (saves when toggling menu)
+
+**Behavior:**
+- Uses Harpoon 2 (latest version)
+- Lazy-loaded with keybindings
+- Marks persist across sessions
+
+## Workflow Patterns
+
+### The Core Files Pattern
+
+Mark your project's core files that you reference constantly:
+
+```
+1. Main entry point (index.ts, main.ts)
+2. Core config file
+3. Main types/interfaces file
+4. Main test file
+```
+
+### The Feature Pattern
+
+When working on a specific feature:
+
+```
+1. Feature controller/handler
+2. Feature service/logic
+3. Feature model/types
+4. Feature tests
+5. Feature documentation
+```
+
+### The Debugging Pattern
+
+When debugging an issue:
+
+```
+1. File with the bug
+2. Test that reproduces it
+3. Related service/utility
+4. Log file or error handler
+```
+
+### The Refactoring Pattern
+
+When refactoring:
+
+```
+1-3. Files you're refactoring
+4-6. Files that depend on them
+7-9. Test files
+```
+
+## Customization
+
+### Change Menu Width
+
+To use a fixed width instead of full width:
+
+```lua
+menu = {
+  width = 80,
+}
+```
+
+### Add More Mark Slots
+
+To add more than 9 marks (requires custom keybindings):
+
+```lua
+keys = function()
+  local keys = { -- existing keys ... }
+  
+  -- Add marks 10-20
+  for i = 10, 20 do
+    table.insert(keys, {
+      "<leader>" .. i,
+      function()
+        require("harpoon"):list():select(i)
+      end,
+      desc = "Harpoon to File " .. i,
+    })
+  end
+  
+  return keys
+end
+```
+
+### Disable Auto-save
+
+If you prefer manual saving:
+
+```lua
+settings = {
+  save_on_toggle = false,
+}
+```
+
+## Harpoon vs Other Navigation
+
+### When to Use Harpoon
+
+✅ You're actively working on a specific set of files
+✅ You need instant access without thinking
+✅ You jump between the same files repeatedly
+✅ You want a "workspace" for your current task
+
+### When to Use Telescope
+
+✅ You need to find a file you don't have marked
+✅ You're exploring the codebase
+✅ You need to search by content
+✅ You're working with files you haven't marked
+
+### When to Use Nvim-tree
+
+✅ You need to browse the directory structure
+✅ You're creating/deleting/moving files
+✅ You need to see the overall project organization
+✅ You're working with new files
+
+<Note>
+These tools complement each other. Use Telescope to find files, mark important ones with Harpoon, and use nvim-tree for file management.
+</Note>
+
+## Tips & Tricks
+
+### Start Fresh for Each Task
+
+When starting a new feature or bug fix, clear your old marks and create a new set relevant to your current task.
+
+### Use Consistent Numbering
+
+Develop a personal convention:
+- 1-3: Core files
+- 4-6: Test files
+- 7-9: Documentation or related files
+
+### Combine with Telescope
+
+1. Use Telescope to find a file: `<leader><leader>`
+2. Mark it with Harpoon: `<leader>H`
+3. Jump to it later: `<leader>1`
+
+### Quick Mark and Jump
+
+Mark files as you discover you need them frequently, not just at the start of your session.
+
+### The Quick Menu is Editable
+
+You can manually edit the Harpoon menu like a regular buffer to reorder or modify file paths.
+
+<Tip>
+The Harpoon menu shows file paths relative to your working directory, making it easy to see where files are located.
+</Tip>
+
+## Common Questions
+
+**Q: How many files can I mark?**
+A: By default, 9 files with quick keybindings. You can technically mark more, but you'll need custom keybindings.
+
+**Q: Do marks persist when I close Neovim?**
+A: Yes, Harpoon saves your marks and restores them when you reopen.
+
+**Q: Can I have different marks per project?**
+A: Yes, Harpoon saves marks per project/directory.
+
+**Q: What if I mark more than 9 files?**
+A: You can still access them through the quick menu (`<leader>h`), they just won't have number keybindings.

@@ -1,0 +1,234 @@
+---
+title: Alpha Dashboard
+description: Customizable startup dashboard with ASCII art and quick actions
+---
+
+## Overview
+
+Alpha is the startup dashboard that appears when you launch Neovim without opening a file. It features custom ASCII art (Luffy from One Piece) and quick action buttons for common tasks.
+
+## Features
+
+- Custom ASCII art header
+- Quick action buttons
+- Motivational quote
+- Clean, centered layout
+- Launches on Neovim startup
+
+## Quick Actions
+
+The dashboard provides three main actions:
+
+| Key | Action | Command | Location |
+|-----|--------|---------|----------|
+| `f` | Find file | `:Telescope find_files` | `lua/leyland/plugins/alpha.lua:45` |
+| `r` | Recent files | `:Telescope oldfiles` | `lua/leyland/plugins/alpha.lua:46` |
+| `q` | Quit Neovim | `:qa` | `lua/leyland/plugins/alpha.lua:47` |
+
+<Tip>
+  Simply press the indicated key (no need to press Enter) to trigger the action.
+</Tip>
+
+## Dashboard Layout
+
+The dashboard consists of several sections:
+
+### Header
+
+Custom ASCII art of Luffy (configured in `lua/leyland/plugins/alpha.lua:8-42`):
+
+```lua
+dashboard.section.header.val = {
+  "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣤⠶⠶⠶⠶⠤⠤⠤⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
+  -- ... ASCII art
+}
+```
+
+### Footer
+
+A motivational quote (configured in `lua/leyland/plugins/alpha.lua:49-53`):
+
+```lua
+dashboard.section.footer.val = {
+  "",
+  '"Maybe the One Piece was the commits you made along the way."',
+  "",
+}
+```
+
+### Buttons
+
+Quick action buttons positioned in the center (configured in `lua/leyland/plugins/alpha.lua:44-48`).
+
+## Layout Configuration
+
+The layout spacing is customized for optimal appearance:
+
+```lua
+dashboard.config.layout = {
+  { type = "padding", val = 2 },   -- Top padding
+  dashboard.section.header,        -- ASCII art
+  { type = "padding", val = 2 },   -- Space after header
+  dashboard.section.footer,        -- Quote
+  { type = "padding", val = 2 },   -- Space after quote
+  dashboard.section.buttons,       -- Action buttons
+  { type = "padding", val = 1 },   -- Bottom padding
+}
+```
+
+<Note>
+  The quote appears before the buttons for better visual flow (configured in `lua/leyland/plugins/alpha.lua:54-62`).
+</Note>
+
+## Customization
+
+### Change the ASCII Art
+
+To use different ASCII art:
+
+<Steps>
+  <Step title="Generate ASCII Art">
+    Use an ASCII art generator or create your own:
+    - [ASCII Art Generator](https://www.asciiart.eu/)
+    - [Text to ASCII](https://patorjk.com/software/taag/)
+  </Step>
+  
+  <Step title="Update Configuration">
+    Replace the `header.val` array in `lua/leyland/plugins/alpha.lua:8`:
+    
+    ```lua
+    dashboard.section.header.val = {
+      "  ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗",
+      "  ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║",
+      "  ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║",
+      -- ... your ASCII art
+    }
+    ```
+  </Step>
+  
+  <Step title="Restart Neovim">
+    Restart Neovim to see your new ASCII art.
+  </Step>
+</Steps>
+
+### Change the Quote
+
+To customize the footer quote:
+
+```lua
+-- In lua/leyland/plugins/alpha.lua:49
+dashboard.section.footer.val = {
+  "",
+  '"Your custom quote here"',
+  "",
+}
+```
+
+### Add More Buttons
+
+To add additional quick actions:
+
+```lua
+dashboard.section.buttons.val = {
+  dashboard.button("f", "  Find file", ":Telescope find_files <CR>"),
+  dashboard.button("r", "  Recent files", ":Telescope oldfiles <CR>"),
+  dashboard.button("n", "  New file", ":ene <BAR> startinsert <CR>"),
+  dashboard.button("c", "  Config", ":e ~/.config/nvim/init.lua <CR>"),
+  dashboard.button("q", "  Quit", ":qa<CR>"),
+}
+```
+
+<Accordion title="Button Format">
+  The `button` function takes three parameters:
+  
+  1. **Key**: Single character to press (e.g., `"f"`)
+  2. **Label**: Text displayed on the button (e.g., `"  Find file"`)
+  3. **Command**: Vim command to execute (e.g., `":Telescope find_files <CR>"`)
+</Accordion>
+
+### Adjust Spacing
+
+Modify padding values in the layout configuration:
+
+```lua
+dashboard.config.layout = {
+  { type = "padding", val = 5 },   -- Increase top padding
+  dashboard.section.header,
+  { type = "padding", val = 3 },   -- More space after header
+  -- ... rest of layout
+}
+```
+
+## Styling
+
+The footer uses the `Comment` highlight group for subtle styling:
+
+```lua
+dashboard.section.footer.opts.hl = "Comment"
+```
+
+You can change this to any highlight group:
+- `"String"` - Green color
+- `"Function"` - Blue color
+- `"Keyword"` - Purple color
+- `"Error"` - Red color
+
+## Disable Folding
+
+Folding is disabled on the Alpha buffer for a cleaner appearance:
+
+```lua
+vim.cmd([[autocmd FileType alpha setlocal nofoldenable]])
+```
+
+## When Alpha Appears
+
+The dashboard appears:
+
+<Steps>
+  <Step title="On Startup">
+    When you launch Neovim without specifying a file:
+    
+    ```bash
+    nvim
+    ```
+  </Step>
+  
+  <Step title="After Closing All Buffers">
+    When you close all open buffers (in some configurations)
+  </Step>
+</Steps>
+
+## Skipping the Dashboard
+
+To skip the dashboard and open a file directly:
+
+```bash
+# Open a specific file
+nvim file.txt
+
+# Open in a specific directory
+nvim .
+```
+
+## Troubleshooting
+
+<Accordion title="Dashboard doesn't appear">
+  1. Make sure you're launching Neovim without opening a file
+  2. Check if Alpha is loaded: `:Lazy`
+  3. Try manually opening: `:Alpha`
+</Accordion>
+
+<Accordion title="ASCII art looks misaligned">
+  1. Use a monospace font in your terminal
+  2. Ensure your terminal window is wide enough
+  3. Check that special characters are rendering correctly
+</Accordion>
+
+<Accordion title="Want to disable the dashboard">
+  Comment out or remove the Alpha plugin from your configuration, or set `lazy = true` in the plugin spec.
+</Accordion>
+
+## Configuration File
+
+- `lua/leyland/plugins/alpha.lua` - Complete dashboard configuration

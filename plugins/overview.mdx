@@ -1,0 +1,160 @@
+---
+title: "Plugins Overview"
+description: "Comprehensive guide to all plugins included in nvim-luffy"
+---
+
+nvim-luffy comes with a carefully curated set of plugins that enhance your Neovim experience. Each plugin is pre-configured with sensible defaults and custom keybindings for maximum productivity.
+
+## Core Plugins
+
+<CardGroup cols={2}>
+  <Card title="Telescope" icon="magnifying-glass" href="/plugins/telescope">
+    Fuzzy finder for files, text, and more. Your primary navigation tool.
+  </Card>
+  
+  <Card title="Nvim-tree" icon="folder-tree" href="/plugins/nvim-tree">
+    File explorer with tree view. Browse and manage your project structure.
+  </Card>
+  
+  <Card title="Harpoon" icon="bookmark" href="/plugins/harpoon">
+    Quick file navigation. Mark and jump between your most important files.
+  </Card>
+  
+  <Card title="Treesitter" icon="code" href="/plugins/treesitter">
+    Advanced syntax highlighting and code understanding.
+  </Card>
+  
+  <Card title="Nvim-cmp" icon="keyboard" href="/plugins/nvim-cmp">
+    Intelligent autocompletion with multiple sources.
+  </Card>
+  
+  <Card title="LSP" icon="server" href="/plugins/lsp">
+    Language Server Protocol integration for IDE-like features.
+  </Card>
+</CardGroup>
+
+## Navigation & Search
+
+### Telescope
+The primary tool for finding anything in your project. Search files, text content, recent files, todos, and keymaps.
+
+**Key features:**
+- Fuzzy file finding
+- Live grep (search in files)
+- Recent files history
+- Todo comments search
+- Keymap browser
+
+### Harpoon
+Lightning-fast navigation between your most important files. Mark up to 9 files and jump between them instantly.
+
+**Key features:**
+- Mark files for quick access
+- Jump to marked files with a single keystroke
+- Persistent file marks across sessions
+
+### Nvim-tree
+Traditional file explorer for when you need to browse your project structure.
+
+**Key features:**
+- Tree view of directories
+- Git status integration
+- File operations (create, delete, rename)
+- Custom icons and indicators
+
+## Code Intelligence
+
+### Treesitter
+Provides advanced syntax highlighting and code understanding through AST parsing.
+
+**Key features:**
+- Accurate syntax highlighting
+- Code folding
+- Incremental parsing
+- Support for 20+ languages
+
+### Nvim-cmp
+Powerful autocompletion engine with multiple sources.
+
+**Key features:**
+- LSP completions
+- Buffer text completions
+- File path completions
+- Snippet support
+- VS Code-like pictograms
+
+### LSP
+Full Language Server Protocol support for IDE features.
+
+**Key features:**
+- Go to definition/references
+- Code actions and refactoring
+- Diagnostics and error checking
+- Hover documentation
+- Rename symbol
+
+## Editing & Formatting
+
+### Autopairs
+Automatically closes brackets, quotes, and other pairs.
+
+### Formatting
+Integrated code formatting with support for multiple formatters (Prettier, Black, etc.).
+
+### Flash
+Enhanced character-based navigation for jumping anywhere on screen.
+
+## Git Integration
+
+### Neogit
+Magit-inspired Git interface for Neovim.
+
+### Diffview
+Powerful diff and merge tool.
+
+### Snacks
+Git signs in the gutter showing added/modified/deleted lines.
+
+## UI & Visual
+
+### Alpha
+Custom dashboard/start screen.
+
+### Colorscheme
+Carefully selected colorscheme with good contrast and readability.
+
+### Trouble
+Pretty list for diagnostics, references, and quickfix items.
+
+## Getting Started
+
+<Steps>
+  <Step title="Explore the file finder">
+    Press `<leader><leader>` to open Telescope and start searching for files.
+  </Step>
+  
+  <Step title="Mark important files">
+    Open a file you work with often and press `<leader>H` to mark it with Harpoon.
+  </Step>
+  
+  <Step title="Try autocompletion">
+    Start typing in insert mode and watch nvim-cmp suggest completions.
+  </Step>
+  
+  <Step title="Open the file explorer">
+    Press `<leader>e` to toggle the nvim-tree file explorer.
+  </Step>
+</Steps>
+
+<Note>
+All plugins are lazy-loaded to ensure fast startup times. They'll activate automatically when needed.
+</Note>
+
+## Configuration Location
+
+All plugin configurations are located in:
+```
+~/.config/nvim/lua/leyland/plugins/
+```
+
+Each plugin has its own configuration file for easy customization.

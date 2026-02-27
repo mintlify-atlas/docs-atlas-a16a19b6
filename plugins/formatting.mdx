@@ -1,0 +1,215 @@
+---
+title: Code Formatting
+description: Automatic code formatting with conform.nvim and multiple formatters
+---
+
+## Overview
+
+The formatting configuration uses [conform.nvim](https://github.com/stevearc/conform.nvim) to provide fast, reliable code formatting across multiple languages. Formatting happens automatically on save, with support for manual formatting as well.
+
+## Supported Languages
+
+conform.nvim is configured with formatters for the following languages:
+
+### JavaScript/TypeScript Ecosystem
+
+| Language | Formatter | Config Location |
+|----------|-----------|----------------|
+| JavaScript | prettier | `lua/leyland/plugins/formatting.lua:9` |
+| TypeScript | prettier | `lua/leyland/plugins/formatting.lua:10` |
+| JavaScript React (JSX) | prettier | `lua/leyland/plugins/formatting.lua:11` |
+| TypeScript React (TSX) | prettier | `lua/leyland/plugins/formatting.lua:12` |
+| Svelte | prettier | `lua/leyland/plugins/formatting.lua:13` |
+
+### Web Technologies
+
+| Language | Formatter | Config Location |
+|----------|-----------|----------------|
+| CSS | prettier | `lua/leyland/plugins/formatting.lua:14` |
+| HTML | prettier | `lua/leyland/plugins/formatting.lua:15` |
+| JSON | prettier | `lua/leyland/plugins/formatting.lua:16` |
+| YAML | prettier | `lua/leyland/plugins/formatting.lua:17` |
+| Markdown | prettier | `lua/leyland/plugins/formatting.lua:18` |
+| GraphQL | prettier | `lua/leyland/plugins/formatting.lua:19` |
+| Liquid | prettier | `lua/leyland/plugins/formatting.lua:20` |
+
+### Other Languages
+
+| Language | Formatter(s) | Config Location |
+|----------|-------------|----------------|
+| Lua | stylua | `lua/leyland/plugins/formatting.lua:21` |
+| Python | isort, black | `lua/leyland/plugins/formatting.lua:22` |
+
+<Note>
+  Python uses two formatters in sequence: `isort` for import sorting, then `black` for code formatting.
+</Note>
+
+## Format on Save
+
+Formatting is configured to run automatically when you save a file:
+
+```lua
+format_on_save = {
+  lsp_fallback = true,
+  async = false,
+  timeout_ms = 3000,
+}
+```
+
+### Configuration Details
+
+- **lsp_fallback**: If no formatter is configured, falls back to LSP formatting
+- **async**: Synchronous formatting (blocks until complete)
+- **timeout_ms**: Maximum time to wait for formatting (3 seconds)
+
+<Tip>
+  If formatting is taking too long, increase the `timeout_ms` value in `lua/leyland/plugins/formatting.lua:24-28`.
+</Tip>
+
+## Manual Formatting
+
+You can manually format your code at any time:
+
+### Keymap
+
+| Mode | Keymap | Description | Location |
+|------|--------|-------------|----------|
+| Normal, Visual | `<leader>mp` | Format file or range | `lua/leyland/plugins/formatting.lua:31` |
+
+### Usage Examples
+
+<Steps>
+  <Step title="Format Entire File">
+    In normal mode, press `<leader>mp` to format the entire file
+  </Step>
+  
+  <Step title="Format Selection">
+    1. Select text in visual mode
+    2. Press `<leader>mp` to format only the selection
+  </Step>
+</Steps>
+
+### Manual Format Configuration
+
+Manual formatting uses slightly different settings:
+
+```lua
+conform.format({
+  lsp_fallback = true,
+  async = false,
+  timeout_ms = 1000,  -- Shorter timeout for manual formatting
+})
+```
+
+## Installing Formatters
+
+Formatters are automatically installed via Mason. See the list in `lua/leyland/plugins/lsp/mason.lua:39-46`:
+
+```lua
+ensure_installed = {
+  "prettier",  -- JS/TS/Web formatter
+  "stylua",    -- Lua formatter
+  "isort",     -- Python import sorter
+  "black",     -- Python formatter
+  "pylint",    -- Python linter
+  "eslint_d",  -- Fast ESLint daemon
+}
+```
+
+<Note>
+  All formatters are installed automatically when you first launch Neovim with this configuration.
+</Note>
+
+## Adding Custom Formatters
+
+To add a formatter for a new language:
+
+<Steps>
+  <Step title="Install the Formatter">
+    Add it to the `ensure_installed` list in `lua/leyland/plugins/lsp/mason.lua:39`
+  </Step>
+  
+  <Step title="Configure conform.nvim">
+    Add the language and formatter to `formatters_by_ft` in `lua/leyland/plugins/formatting.lua:8`:
+    
+    ```lua
+    formatters_by_ft = {
+      -- Existing formatters...
+      rust = { "rustfmt" },  -- Example
+    }
+    ```
+  </Step>
+  
+  <Step title="Restart Neovim">
+    Restart Neovim to apply changes. Mason will automatically install the new formatter.
+  </Step>
+</Steps>
+
+## Disabling Format on Save
+
+If you prefer to format manually, you can disable format on save:
+
+```lua
+-- In lua/leyland/plugins/formatting.lua
+conform.setup({
+  formatters_by_ft = {
+    -- ... your formatters
+  },
+  -- Comment out or remove format_on_save
+  -- format_on_save = {
+  --   lsp_fallback = true,
+  --   async = false,
+  --   timeout_ms = 3000,
+  -- },
+})
+```
+
+## Formatter-Specific Configuration
+
+conform.nvim supports per-formatter configuration. To customize a formatter:
+
+```lua
+conform.setup({
+  formatters_by_ft = {
+    -- ...
+  },
+  formatters = {
+    prettier = {
+      prepend_args = { "--print-width", "100" },
+    },
+  },
+})
+```
+
+## Troubleshooting
+
+<Accordion title="Formatting isn't working">
+  1. Check if the formatter is installed: `:Mason`
+  2. Verify the filetype: `:set filetype?`
+  3. Check conform status: `:ConformInfo`
+  4. Make sure the formatter is in your PATH
+</Accordion>
+
+<Accordion title="Formatting is too slow">
+  Increase the timeout in `lua/leyland/plugins/formatting.lua:27`:
+  
+  ```lua
+  format_on_save = {
+    timeout_ms = 5000,  -- Increased from 3000
+  }
+  ```
+</Accordion>
+
+<Accordion title="I want to use a different formatter">
+  Change the formatter in `formatters_by_ft`. For example, to use `eslint_d` instead of `prettier` for JavaScript:
+  
+  ```lua
+  formatters_by_ft = {
+    javascript = { "eslint_d" },
+  }
+  ```
+</Accordion>
+
+## Configuration File
+
+- `lua/leyland/plugins/formatting.lua` - Complete formatting configuration

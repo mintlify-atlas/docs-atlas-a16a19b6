@@ -1,0 +1,211 @@
+---
+title: LSP Configuration
+description: Language Server Protocol setup with Mason, LSP servers, and intelligent code features
+---
+
+## Overview
+
+nvim-luffy comes with a comprehensive LSP (Language Server Protocol) setup that provides intelligent code completion, diagnostics, formatting, and more. The configuration uses Mason to manage LSP servers and provides a consistent development experience across multiple languages.
+
+## Components
+
+The LSP setup consists of three main components:
+
+1. **Mason** - LSP server installer and manager
+2. **LSP Config** - Language server configuration
+3. **LSP Keymaps** - Buffer-local keybindings when LSP attaches
+
+## Installed Language Servers
+
+The following language servers are automatically installed via Mason:
+
+<Steps>
+  <Step title="JavaScript/TypeScript">
+    - **ts_ls** - TypeScript language server
+    - **eslint** - ESLint language server
+  </Step>
+  
+  <Step title="Web Development">
+    - **html** - HTML language server
+    - **cssls** - CSS language server
+    - **tailwindcss** - Tailwind CSS language server
+    - **emmet_ls** - Emmet language server
+  </Step>
+  
+  <Step title="Frameworks">
+    - **svelte** - Svelte language server
+    - **graphql** - GraphQL language server
+    - **prismals** - Prisma language server
+  </Step>
+  
+  <Step title="Other Languages">
+    - **lua_ls** - Lua language server
+    - **pyright** - Python language server
+  </Step>
+</Steps>
+
+<Note>
+  All language servers are configured in `lua/leyland/plugins/lsp/mason.lua:6-18`
+</Note>
+
+## LSP Keymaps
+
+When an LSP server attaches to a buffer, the following keybindings become available:
+
+### Navigation
+
+| Keymap | Description | Location |
+|--------|-------------|----------|
+| `gR` | Show LSP references (Telescope) | `lua/leyland/lsp.lua:11` |
+| `gd` | Go to declaration/definition | `lua/leyland/lsp.lua:14` |
+| `gi` | Show LSP implementations (Telescope) | `lua/leyland/lsp.lua:20` |
+| `gt` | Show LSP type definitions (Telescope) | `lua/leyland/lsp.lua:23` |
+
+### Code Actions
+
+| Keymap | Mode | Description | Location |
+|--------|------|-------------|----------|
+| `<leader>ca` | Normal, Visual | See available code actions | `lua/leyland/lsp.lua:26` |
+| `<leader>rn` | Normal | Smart rename | `lua/leyland/lsp.lua:29` |
+
+<Tip>
+  In visual mode, code actions will apply to the selected text only.
+</Tip>
+
+### Diagnostics
+
+| Keymap | Description | Location |
+|--------|-------------|----------|
+| `<leader>D` | Show buffer diagnostics (Telescope) | `lua/leyland/lsp.lua:32` |
+| `<leader>d` | Show line diagnostics (floating window) | `lua/leyland/lsp.lua:35` |
+| `[d` | Go to previous diagnostic | `lua/leyland/lsp.lua:38` |
+| `]d` | Go to next diagnostic | `lua/leyland/lsp.lua:43` |
+
+### Documentation
+
+| Keymap | Description | Location |
+|--------|-------------|----------|
+| `K` | Show documentation for symbol under cursor | `lua/leyland/lsp.lua:48` |
+
+### Utilities
+
+| Keymap | Description | Location |
+|--------|-------------|----------|
+| `<leader>rs` | Restart LSP server | `lua/leyland/lsp.lua:51` |
+
+## Diagnostic Configuration
+
+Diagnostics are configured with custom icons and severity levels:
+
+```lua
+local severity = vim.diagnostic.severity
+
+vim.diagnostic.config({
+  underline = {
+    severity = { min = severity.ERROR },
+  },
+  signs = {
+    text = {
+      [severity.ERROR] = " ",
+      [severity.WARN] = " ",
+      [severity.HINT] = "󰠠 ",
+      [severity.INFO] = " ",
+    },
+  },
+})
+```
+
+<Accordion title="Diagnostic Icons">
+  - **Error**:   (Only errors are underlined)
+  - **Warning**:  
+  - **Hint**: 󰠠 
+  - **Info**:  
+</Accordion>
+
+## Mason Tools
+
+In addition to LSP servers, Mason also installs formatters and linters:
+
+### Formatters
+
+- **prettier** - JavaScript, TypeScript, HTML, CSS, JSON, YAML, Markdown
+- **stylua** - Lua formatter
+- **isort** - Python import sorter
+- **black** - Python formatter
+
+### Linters
+
+- **pylint** - Python linter
+- **eslint_d** - Fast ESLint daemon
+
+<Note>
+  Formatters are configured in the [Formatting](/plugins/formatting) plugin.
+</Note>
+
+## LSP Capabilities
+
+The LSP configuration enables enhanced completion capabilities through `cmp-nvim-lsp`:
+
+```lua
+local cmp_nvim_lsp = require("cmp_nvim_lsp")
+local capabilities = cmp_nvim_lsp.default_capabilities()
+
+vim.lsp.config("*", {
+  capabilities = capabilities,
+})
+```
+
+This configuration is applied to all LSP servers automatically.
+
+## Additional Features
+
+### File Operations
+
+The `nvim-lsp-file-operations` plugin is included to handle file operations (rename, move, etc.) with LSP awareness.
+
+### Lua Development
+
+The `lazydev.nvim` plugin provides enhanced Lua development features specifically for Neovim plugin development.
+
+## Managing LSP Servers
+
+### Install Additional Servers
+
+1. Open Mason:
+   ```vim
+   :Mason
+   ```
+
+2. Search for a language server and press `i` to install
+
+3. Or add it to the `ensure_installed` list in `lua/leyland/plugins/lsp/mason.lua`
+
+### Troubleshooting
+
+If an LSP server isn't working:
+
+<Steps>
+  <Step title="Check LSP Status">
+    Use `:LspInfo` to see which servers are attached and their status
+  </Step>
+  
+  <Step title="Restart LSP">
+    Press `<leader>rs` to restart the LSP server
+  </Step>
+  
+  <Step title="Check Logs">
+    View LSP logs with `:LspLog`
+  </Step>
+  
+  <Step title="Reinstall Server">
+    Open `:Mason`, find the server, and reinstall it
+  </Step>
+</Steps>
+
+## Configuration Files
+
+The LSP setup is split across multiple files:
+
+- `lua/leyland/lsp.lua` - Keymaps and diagnostic configuration
+- `lua/leyland/plugins/lsp/mason.lua` - Mason server and tool installation
+- `lua/leyland/plugins/lsp/lsp.lua` - LSP capabilities configuration

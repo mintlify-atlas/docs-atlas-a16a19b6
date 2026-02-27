@@ -1,0 +1,209 @@
+---
+title: "Telescope"
+description: "Fuzzy finder for files, text, and more - your primary navigation tool"
+---
+
+Telescope is a highly extensible fuzzy finder that serves as the primary navigation tool in nvim-luffy. It provides lightning-fast searching for files, text content, and various other items.
+
+## Overview
+
+Telescope uses fuzzy matching to help you quickly find:
+- Files in your project
+- Text content across all files
+- Recent files
+- TODO comments
+- Keymaps
+- And much more
+
+<Note>
+Telescope is configured with the FZF native extension for even faster performance.
+</Note>
+
+## Keymaps
+
+### File Navigation
+
+| Keymap | Description | Command |
+|--------|-------------|----------|
+| `<leader><leader>` | Find files in current directory | `:Telescope find_files` |
+| `<leader>fr` | Find recent files | `:Telescope oldfiles` |
+
+### Text Search
+
+| Keymap | Description | Command |
+|--------|-------------|----------|
+| `<leader>/` | Live grep (search in files) | `:Telescope live_grep` |
+| `<leader>fc` | Find string under cursor | `:Telescope grep_string` |
+
+### Special Searches
+
+| Keymap | Description | Command |
+|--------|-------------|----------|
+| `<leader>ft` | Find TODO comments | `:TodoTelescope` |
+| `<leader>fk` | Browse keymaps | `:Telescope keymaps` |
+
+### Telescope Window Navigation
+
+While in a Telescope window:
+
+| Keymap | Description |
+|--------|-------------|
+| `<C-j>` | Move to next result |
+| `<C-k>` | Move to previous result |
+| `<C-q>` | Send selected items to quickfix list |
+| `<Esc>` | Close Telescope |
+| `<Enter>` | Open selected file |
+
+## Usage Examples
+
+### Finding Files
+
+<Steps>
+  <Step title="Open the file finder">
+    Press `<leader><leader>` to open Telescope's file finder.
+  </Step>
+  
+  <Step title="Type to search">
+    Start typing any part of the filename. Telescope uses fuzzy matching, so you don't need to type the exact name.
+    
+    For example, typing `usrctl` will match `UserController.ts`.
+  </Step>
+  
+  <Step title="Navigate and open">
+    Use `<C-j>` and `<C-k>` to move through results, then press `<Enter>` to open the file.
+  </Step>
+</Steps>
+
+### Searching Text Content
+
+<Steps>
+  <Step title="Open live grep">
+    Press `<leader>/` to search for text across all files in your project.
+  </Step>
+  
+  <Step title="Type your search term">
+    Enter the text you're looking for. Results update in real-time as you type.
+  </Step>
+  
+  <Step title="Review results">
+    Telescope shows the filename, line number, and matching line for each result.
+  </Step>
+</Steps>
+
+<Tip>
+To search for the word under your cursor, use `<leader>fc` instead of typing it manually.
+</Tip>
+
+### Finding TODOs
+
+Press `<leader>ft` to search for all TODO, HACK, WARN, PERF, NOTE, and FIX comments in your project.
+
+```lua
+-- TODO: Implement this feature
+-- HACK: Temporary workaround
+-- WARN: This might cause issues
+-- PERF: Optimize this section
+-- NOTE: Important information
+-- FIX: Bug that needs fixing
+```
+
+### Browsing Keymaps
+
+Press `<leader>fk` to see all available keymaps. This is incredibly useful when learning nvim-luffy.
+
+## Configuration
+
+The Telescope configuration is located at:
+```
+~/.config/nvim/lua/leyland/plugins/telescope.lua
+```
+
+### Current Settings
+
+```lua lua/leyland/plugins/telescope.lua
+telescope.setup({
+  defaults = {
+    path_display = { "filename_first" },
+    mappings = {
+      i = {
+        ["<C-k>"] = actions.move_selection_previous,
+        ["<C-j>"] = actions.move_selection_next,
+        ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+      },
+    },
+  },
+  pickers = {
+    live_grep = {
+      path_display = { "truncate" },
+    },
+  },
+})
+```
+
+### Dependencies
+
+Telescope requires the following plugins:
+- `plenary.nvim` - Core Lua functions
+- `telescope-fzf-native.nvim` - FZF algorithm for faster performance
+- `nvim-web-devicons` - File icons
+- `todo-comments.nvim` - TODO comment integration
+
+## Customization
+
+### Adding Custom Pickers
+
+You can add your own Telescope pickers. Add this to your configuration:
+
+```lua
+keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
+```
+
+### Changing Display Options
+
+To change how paths are displayed:
+
+```lua
+defaults = {
+  path_display = { "smart" }, -- Options: "smart", "truncate", "filename_first"
+}
+```
+
+### Adding More Search Locations
+
+To search in specific directories:
+
+```lua
+keymap.set("n", "<leader>fc", function()
+  require('telescope.builtin').find_files({
+    cwd = "~/.config"
+  })
+end, { desc = "Find config files" })
+```
+
+<Tip>
+Telescope has many more built-in pickers. Run `:Telescope` without arguments to see all available options.
+</Tip>
+
+## Tips & Tricks
+
+### Fast Navigation
+- Use fuzzy matching: type key letters instead of the full name
+- Example: `usco` matches `UserController.js`
+
+### Combining with Quickfix
+- Select multiple items in Telescope with `<Tab>`
+- Send them to quickfix with `<C-q>`
+- Navigate through them with `:cnext` and `:cprev`
+
+### Recent Files
+- `<leader>fr` shows your file history
+- Great for jumping back to files you worked on earlier
+
+### Search and Replace
+1. Use `<leader>/` to find all occurrences
+2. Send to quickfix with `<C-q>`
+3. Use `:cdo s/old/new/g | update` to replace in all files
+
+<Note>
+Telescope respects your `.gitignore` file and won't search ignored files by default.
+</Note>

@@ -1,0 +1,328 @@
+---
+title: Adding Plugins
+description: Learn how to add and configure new plugins using lazy.nvim in nvim-luffy
+---
+
+## Overview
+
+nvim-luffy uses [lazy.nvim](https://github.com/folke/lazy.nvim) as its plugin manager. This guide will show you how to add new plugins to your configuration.
+
+## Understanding the Plugin Structure
+
+All plugins in nvim-luffy are organized in the `lua/leyland/plugins/` directory. The lazy.nvim setup is configured in `lua/leyland/lazy.lua:14`:
+
+```lua
+require("lazy").setup({ { import = "leyland.plugins" }, { import = "leyland.plugins.lsp" } }, {
+  checker = {
+    enabled = true,
+    notify = false,
+  },
+  change_detection = {
+    notify = false,
+  },
+})
+```
+
+This configuration automatically loads all plugin files from:
+- `lua/leyland/plugins/` - General plugins
+- `lua/leyland/plugins/lsp/` - LSP-related plugins
+
+## Adding a Simple Plugin
+
+<Steps>
+  <Step title="Create a new plugin file">
+    Create a new Lua file in `lua/leyland/plugins/` with a descriptive name.
+
+    For example, to add the `vim-surround` plugin, create `lua/leyland/plugins/vim-surround.lua`:
+
+    ```lua
+    return {
+      "tpope/vim-surround",
+      event = "VeryLazy",
+    }
+    ```
+  </Step>
+
+  <Step title="Restart Neovim">
+    Restart Neovim or run `:Lazy` to see your new plugin. lazy.nvim will automatically detect and install it.
+  </Step>
+
+  <Step title="Verify installation">
+    Run `:Lazy` to open the lazy.nvim interface and verify your plugin is installed.
+  </Step>
+</Steps>
+
+<Tip>
+Grouping related plugins in a single file is a common pattern. For example, all colorscheme plugins are in `lua/leyland/plugins/colorscheme.lua:1-41`.
+</Tip>
+
+## Adding a Plugin with Configuration
+
+Most plugins require some configuration. Here's how to add a plugin with custom settings:
+
+<CodeGroup>
+```lua lua/leyland/plugins/indent-blankline.lua
+return {
+  "lukas-reineke/indent-blankline.nvim",
+  main = "ibl",
+  event = { "BufReadPre", "BufNewFile" },
+  config = function()
+    local ibl = require("ibl")
+
+    ibl.setup({
+      indent = {
+        char = "│",
+      },
+      scope = {
+        enabled = true,
+        show_start = true,
+        show_end = false,
+      },
+    })
+  end,
+}
+```
+
+```lua lua/leyland/plugins/which-key.lua
+return {
+  "folke/which-key.nvim",
+  event = "VeryLazy",
+  init = function()
+    vim.o.timeout = true
+    vim.o.timeoutlen = 300
+  end,
+  config = function()
+    local wk = require("which-key")
+    
+    wk.setup({
+      plugins = {
+        marks = true,
+        registers = true,
+        spelling = {
+          enabled = true,
+          suggestions = 20,
+        },
+      },
+    })
+  end,
+}
+```
+</CodeGroup>
+
+## Plugin Configuration Options
+
+Here are the most commonly used lazy.nvim plugin specification options:
+
+| Option | Type | Description | Example |
+|--------|------|-------------|----------|
+| `event` | string/table | Lazy-load on event | `"VeryLazy"`, `{"BufReadPre", "BufNewFile"}` |
+| `cmd` | string/table | Lazy-load on command | `"Telescope"`, `{"Git", "Neogit"}` |
+| `ft` | string/table | Lazy-load on filetype | `"lua"`, `{"python", "javascript"}` |
+| `keys` | table | Lazy-load on keymap | `{{"<leader>f", "<cmd>Telescope<cr>"}}` |
+| `dependencies` | table | Plugin dependencies | `{"nvim-lua/plenary.nvim"}` |
+| `config` | function | Configuration function | `function() require("plugin").setup() end` |
+| `init` | function | Always executed on startup | `function() vim.g.plugin_var = true end` |
+| `lazy` | boolean | Disable lazy-loading | `false` |
+| `priority` | number | Load order (higher = earlier) | `1000` |
+
+## Real-World Examples
+
+### Example 1: Plugin with Dependencies
+
+Looking at the autopairs plugin in `lua/leyland/plugins/autopairs.lua:1-31`:
+
+```lua
+return {
+  "windwp/nvim-autopairs",
+  event = { "InsertEnter" },
+  dependencies = {
+    "hrsh7th/nvim-cmp",
+  },
+  config = function()
+    local autopairs = require("nvim-autopairs")
+
+    autopairs.setup({
+      check_ts = true,
+      ts_config = {
+        lua = { "string" },
+        javascript = { "template_string" },
+        java = false,
+      },
+    })
+
+    -- Integration with nvim-cmp
+    local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+    local cmp = require("cmp")
+    cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+  end,
+}
+```
+
+### Example 2: Multiple Plugins in One File
+
+Looking at the colorscheme configuration in `lua/leyland/plugins/colorscheme.lua:1-41`:
+
+```lua
+return {
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+  },
+  {
+    "folke/tokyonight.nvim",
+    priority = 1000,
+  },
+  {
+    "rose-pine/neovim",
+    name = "rose-pine",
+    priority = 1000,
+    config = function()
+      -- Set your default theme here
+      vim.cmd.colorscheme("rose-pine")
+    end,
+  },
+}
+```
+
+<Note>
+Only the last plugin in a multi-plugin file should have the `config` function that sets the colorscheme. This ensures all colorschemes are loaded before one is activated.
+</Note>
+
+### Example 3: Plugin with Keybindings
+
+```lua
+return {
+  "ggandor/leap.nvim",
+  event = "VeryLazy",
+  config = function()
+    local leap = require("leap")
+    leap.add_default_mappings()
+  end,
+  keys = {
+    { "s", mode = { "n", "x", "o" }, desc = "Leap forward" },
+    { "S", mode = { "n", "x", "o" }, desc = "Leap backward" },
+  },
+}
+```
+
+## Lazy-Loading Strategies
+
+<Warning>
+Proper lazy-loading is crucial for startup performance. Always specify when your plugin should load unless it's needed immediately at startup.
+</Warning>
+
+### Load on Event
+
+Best for plugins needed during editing:
+
+```lua
+return {
+  "plugin/name",
+  event = "VeryLazy", -- Load after startup
+  -- Or specific events:
+  event = { "BufReadPre", "BufNewFile" }, -- Load when opening files
+  event = "InsertEnter", -- Load when entering insert mode
+}
+```
+
+### Load on Command
+
+Best for plugins with specific commands:
+
+```lua
+return {
+  "nvim-neo-tree/neo-tree.nvim",
+  cmd = "Neotree", -- Load when :Neotree is run
+}
+```
+
+### Load on Filetype
+
+Best for language-specific plugins:
+
+```lua
+return {
+  "rust-lang/rust.vim",
+  ft = "rust", -- Load only for Rust files
+}
+```
+
+### Load on Keymap
+
+Best for plugins activated via keybindings:
+
+```lua
+return {
+  "folke/trouble.nvim",
+  keys = {
+    { "<leader>xx", "<cmd>Trouble<cr>", desc = "Toggle Trouble" },
+  },
+}
+```
+
+## Managing Plugins
+
+### Useful lazy.nvim Commands
+
+| Command | Description |
+|---------|-------------|
+| `:Lazy` | Open lazy.nvim UI |
+| `:Lazy install` | Install missing plugins |
+| `:Lazy update` | Update all plugins |
+| `:Lazy sync` | Install missing and update plugins |
+| `:Lazy clean` | Remove unused plugins |
+| `:Lazy check` | Check for updates |
+| `:Lazy profile` | Show startup time profile |
+| `:Lazy log` | Show recent updates |
+
+### Removing a Plugin
+
+<Steps>
+  <Step title="Delete the plugin file">
+    Remove the plugin file from `lua/leyland/plugins/` or remove the plugin specification from a multi-plugin file.
+  </Step>
+
+  <Step title="Clean up">
+    Run `:Lazy clean` to remove the plugin files from your system.
+  </Step>
+
+  <Step title="Restart Neovim">
+    Restart Neovim to complete the removal.
+  </Step>
+</Steps>
+
+## Best Practices
+
+1. **One Plugin Per File**: For complex plugins with lots of configuration, use a dedicated file
+2. **Group Related Plugins**: Simple related plugins (like colorschemes) can share a file
+3. **Use Descriptive Names**: Name files after the plugin or its purpose (e.g., `telescope.lua`, `lsp-config.lua`)
+4. **Lazy-Load Everything**: Use `event`, `cmd`, `ft`, or `keys` to lazy-load plugins
+5. **Comment Your Config**: Add comments explaining non-obvious configuration choices
+6. **Check Dependencies**: Use the `dependencies` option to ensure plugins load in the correct order
+
+## Troubleshooting
+
+### Plugin Not Loading
+
+1. Check the plugin file is in `lua/leyland/plugins/` or `lua/leyland/plugins/lsp/`
+2. Verify the return statement is correct (should return a table or array of tables)
+3. Run `:Lazy` to see if there are any errors
+4. Check `:messages` for error messages
+
+### Plugin Loading Too Late
+
+1. Remove or adjust lazy-loading triggers (`event`, `cmd`, `ft`, `keys`)
+2. Set `lazy = false` to disable lazy-loading
+3. Increase `priority` for plugins that need to load early
+
+### Configuration Not Applied
+
+1. Ensure your `config` function is being called (add a print statement to test)
+2. Check if `init` should be used instead of `config` for settings needed at startup
+3. Verify plugin-specific setup function names in the documentation
+
+## Next Steps
+
+- [Change Colorschemes](/customization/changing-colorschemes) - Customize your editor's appearance
+- [Custom Keymaps](/customization/custom-keymaps) - Add your own keyboard shortcuts

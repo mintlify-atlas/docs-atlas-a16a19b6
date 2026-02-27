@@ -1,0 +1,268 @@
+---
+title: Color Themes
+description: Available color schemes and how to switch between them
+---
+
+## Overview
+
+nvim-luffy comes with six carefully selected color schemes. By default, the **Bamboo** theme is active, but you can easily switch to any other theme.
+
+## Available Themes
+
+### Catppuccin
+
+A modern, warm color scheme with excellent syntax highlighting.
+
+- **Plugin**: `catppuccin/nvim`
+- **Name**: `catppuccin`
+- **Priority**: High (loads early)
+- **Location**: `lua/leyland/plugins/colorscheme.lua:3-7`
+
+```vim
+:colorscheme catppuccin
+```
+
+### Tokyo Night
+
+A clean, dark theme inspired by the city lights of Tokyo at night.
+
+- **Plugin**: `folke/tokyonight.nvim`
+- **Priority**: High
+- **Location**: `lua/leyland/plugins/colorscheme.lua:8-11`
+
+```vim
+:colorscheme tokyonight
+```
+
+<Tip>
+  Tokyo Night has multiple variants: `tokyonight-night`, `tokyonight-storm`, `tokyonight-day`, and `tokyonight-moon`.
+</Tip>
+
+### Modus Themes
+
+Accessible themes designed for long-duration coding sessions.
+
+- **Plugin**: `miikanissi/modus-themes.nvim`
+- **Priority**: High
+- **Location**: `lua/leyland/plugins/colorscheme.lua:12-15`
+
+```vim
+:colorscheme modus
+```
+
+### Bamboo (Default)
+
+A warm, nature-inspired theme with excellent readability.
+
+- **Plugin**: `ribru17/bamboo.nvim`
+- **Lazy**: False (loads immediately)
+- **Priority**: High
+- **Location**: `lua/leyland/plugins/colorscheme.lua:16-20`
+- **Default**: Yes (configured in `lua/leyland/plugins/colorscheme.lua:37`)
+
+```vim
+:colorscheme bamboo
+```
+
+### OneDark
+
+Based on Atom's iconic One Dark theme.
+
+- **Plugin**: `navarasu/onedark.nvim`
+- **Priority**: High
+- **Location**: `lua/leyland/plugins/colorscheme.lua:21-30`
+
+```vim
+:colorscheme onedark
+```
+
+<Accordion title="OneDark Styles">
+  OneDark has commented-out configuration for different styles:
+  
+  ```lua
+  require("onedark").setup({
+    style = "deep",  -- Options: 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer'
+  })
+  ```
+  
+  Uncomment and modify in `lua/leyland/plugins/colorscheme.lua:24-29` to use a different style.
+</Accordion>
+
+### Rose Pine
+
+A natural, low-contrast theme with a focus on important details.
+
+- **Plugin**: `rose-pine/neovim`
+- **Name**: `rose-pine`
+- **Priority**: High
+- **Location**: `lua/leyland/plugins/colorscheme.lua:31-39`
+
+```vim
+:colorscheme rose-pine
+```
+
+## Switching Themes
+
+### Temporarily (Current Session)
+
+Change the theme for the current session only:
+
+```vim
+:colorscheme <theme-name>
+```
+
+**Examples:**
+```vim
+:colorscheme catppuccin
+:colorscheme tokyonight
+:colorscheme bamboo
+```
+
+<Tip>
+  Use Tab completion after typing `:colorscheme ` to see all available themes.
+</Tip>
+
+### Permanently (Default Theme)
+
+To change your default theme:
+
+<Steps>
+  <Step title="Edit the Configuration">
+    Open `lua/leyland/plugins/colorscheme.lua`:
+    
+    ```vim
+    :e lua/leyland/plugins/colorscheme.lua
+    ```
+  </Step>
+  
+  <Step title="Change the Default">
+    Find line 37 and change `"bamboo"` to your preferred theme:
+    
+    ```lua
+    config = function()
+      -- Set your default theme here
+      vim.cmd.colorscheme("tokyonight")  -- Changed from "bamboo"
+    end,
+    ```
+  </Step>
+  
+  <Step title="Restart Neovim">
+    Restart Neovim or reload the configuration:
+    
+    ```vim
+    :source %
+    ```
+  </Step>
+</Steps>
+
+## Theme Configuration
+
+All themes are configured with high priority to ensure they load before other plugins:
+
+```lua
+return {
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,  -- High priority
+  },
+  -- ... more themes
+}
+```
+
+The default theme is set in the Rose Pine configuration:
+
+```lua
+{
+  "rose-pine/neovim",
+  name = "rose-pine",
+  priority = 1000,
+  config = function()
+    -- Set your default theme here
+    vim.cmd.colorscheme("bamboo")
+  end,
+}
+```
+
+<Note>
+  The default theme configuration is in the Rose Pine block for historical reasons. The actual Rose Pine theme doesn't need to be installed for Bamboo to work.
+</Note>
+
+## Adding New Themes
+
+To add a new color scheme:
+
+<Steps>
+  <Step title="Find a Theme">
+    Search for Neovim color schemes on GitHub or [vimcolorschemes.com](https://vimcolorschemes.com/).
+  </Step>
+  
+  <Step title="Add to Configuration">
+    Add the theme to `lua/leyland/plugins/colorscheme.lua`:
+    
+    ```lua
+    return {
+      -- Existing themes...
+      {
+        "username/theme-name",
+        name = "theme-name",
+        priority = 1000,
+      },
+    }
+    ```
+  </Step>
+  
+  <Step title="Restart Neovim">
+    Restart Neovim. The theme will be automatically installed by lazy.nvim.
+  </Step>
+  
+  <Step title="Activate the Theme">
+    Try the new theme:
+    
+    ```vim
+    :colorscheme theme-name
+    ```
+  </Step>
+</Steps>
+
+## Theme Preview
+
+To quickly preview all installed themes:
+
+1. Use Telescope's colorscheme picker:
+   ```vim
+   :Telescope colorscheme
+   ```
+
+2. Navigate through themes with `<Up>` and `<Down>` arrows
+3. Press `<Enter>` to select a theme
+4. Press `<Esc>` to cancel
+
+<Tip>
+  The colorscheme picker shows a live preview as you navigate through themes!
+</Tip>
+
+## Troubleshooting
+
+<Accordion title="Theme colors look wrong">
+  Make sure your terminal supports 24-bit true color:
+  
+  ```lua
+  -- This should already be set in your config
+  vim.opt.termguicolors = true
+  ```
+</Accordion>
+
+<Accordion title="Theme isn't loading">
+  1. Check if the theme plugin is installed: `:Lazy`
+  2. Verify the colorscheme name: `:colorscheme` (shows current theme)
+  3. Try reinstalling: `:Lazy sync`
+</Accordion>
+
+<Accordion title="Want to remove unused themes">
+  Simply delete the theme block from `lua/leyland/plugins/colorscheme.lua` and run `:Lazy clean`.
+</Accordion>
+
+## Configuration File
+
+- `lua/leyland/plugins/colorscheme.lua` - All colorscheme configurations

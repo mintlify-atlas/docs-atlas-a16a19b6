@@ -1,0 +1,318 @@
+---
+title: "Nvim-tree"
+description: "File explorer with tree view for browsing and managing your project structure"
+---
+
+Nvim-tree is a file explorer that provides a traditional tree view of your project structure. It's configured to display on the right side with relative line numbers and custom navigation keybindings.
+
+## Overview
+
+Nvim-tree offers:
+- Visual tree representation of your project
+- Git status integration
+- File operations (create, delete, rename, move)
+- Custom icons and folder indicators
+- Easy navigation with vim-style keybindings
+
+<Note>
+Nvim-tree is configured to appear on the right side of your screen with a width of 50 columns.
+</Note>
+
+## Keymaps
+
+### Toggle File Explorer
+
+| Keymap | Description | Command |
+|--------|-------------|----------|
+| `<leader>e` | Toggle file explorer on current file | `:NvimTreeFindFileToggle` |
+
+### Navigation Inside Nvim-tree
+
+| Keymap | Description |
+|--------|-------------|
+| `l` | Open file or expand directory |
+| `h` | Close directory (go to parent) |
+| `<CR>` | Open file |
+| `o` | Open file (alternative) |
+| `v` | Open file in vertical split |
+| `s` | Open file in horizontal split |
+| `t` | Open file in new tab |
+| `<C-v>` | Open in vertical split |
+| `<C-x>` | Open in horizontal split |
+| `<C-t>` | Open in new tab |
+
+### File Operations
+
+| Keymap | Description |
+|--------|-------------|
+| `a` | Create new file or directory |
+| `d` | Delete file or directory |
+| `r` | Rename file or directory |
+| `x` | Cut file or directory |
+| `c` | Copy file or directory |
+| `p` | Paste file or directory |
+| `y` | Copy filename |
+| `Y` | Copy relative path |
+| `gy` | Copy absolute path |
+
+### View Options
+
+| Keymap | Description |
+|--------|-------------|
+| `R` | Refresh tree |
+| `H` | Toggle hidden files |
+| `I` | Toggle git ignored files |
+| `E` | Expand all directories |
+| `W` | Collapse all directories |
+| `.` | Change root to current directory |
+| `-` | Navigate up to parent directory |
+
+### Other Actions
+
+| Keymap | Description |
+|--------|-------------|
+| `g?` | Show help |
+| `q` | Close nvim-tree |
+
+## Usage Examples
+
+### Opening the File Explorer
+
+<Steps>
+  <Step title="Toggle the explorer">
+    Press `<leader>e` to open nvim-tree. If you're in a file, it will automatically expand to show that file's location.
+  </Step>
+  
+  <Step title="Navigate the tree">
+    Use `j` and `k` to move up and down. Press `l` to expand directories and `h` to collapse them.
+  </Step>
+  
+  <Step title="Open a file">
+    Navigate to the file you want and press `<CR>` or `l` to open it.
+  </Step>
+</Steps>
+
+### Creating New Files
+
+<Steps>
+  <Step title="Open nvim-tree">
+    Press `<leader>e` to open the file explorer.
+  </Step>
+  
+  <Step title="Navigate to directory">
+    Move to the directory where you want to create the file.
+  </Step>
+  
+  <Step title="Create the file">
+    Press `a` and type the filename. Add a trailing `/` to create a directory instead.
+    
+    Examples:
+    - `newfile.js` - creates a file
+    - `newdir/` - creates a directory
+  </Step>
+</Steps>
+
+<Tip>
+You can create nested structures in one go: `src/components/Button.tsx`
+</Tip>
+
+### Deleting Files
+
+<Steps>
+  <Step title="Select the file">
+    Navigate to the file or directory you want to delete.
+  </Step>
+  
+  <Step title="Delete">
+    Press `d` and confirm the deletion.
+  </Step>
+</Steps>
+
+<Note>
+Deleted files go to your system trash, not permanent deletion.
+</Note>
+
+### Copying and Moving Files
+
+<Steps>
+  <Step title="Copy or cut">
+    Navigate to the file and press `c` to copy or `x` to cut.
+  </Step>
+  
+  <Step title="Navigate to destination">
+    Move to the directory where you want to paste.
+  </Step>
+  
+  <Step title="Paste">
+    Press `p` to paste the file.
+  </Step>
+</Steps>
+
+### Renaming Files
+
+<Steps>
+  <Step title="Select the file">
+    Navigate to the file you want to rename.
+  </Step>
+  
+  <Step title="Rename">
+    Press `r` and type the new name.
+  </Step>
+</Steps>
+
+## Configuration
+
+The nvim-tree configuration is located at:
+```
+~/.config/nvim/lua/leyland/plugins/nvim-tree.lua
+```
+
+### Current Settings
+
+```lua lua/leyland/plugins/nvim-tree.lua
+nvimtree.setup({
+  view = {
+    width = 50,
+    relativenumber = true,
+    side = "right",
+  },
+  renderer = {
+    indent_markers = {
+      enable = true,
+    },
+    icons = {
+      glyphs = {
+        folder = {
+          arrow_closed = "",
+          arrow_open = "",
+        },
+      },
+    },
+  },
+  actions = {
+    open_file = {
+      window_picker = {
+        enable = false,
+      },
+    },
+  },
+  filters = {
+    custom = { ".DS_Store" },
+  },
+  git = {
+    ignore = false,
+  },
+})
+```
+
+### Key Configuration Options
+
+**View Settings:**
+- Width: 50 columns
+- Position: Right side
+- Relative numbers: Enabled
+
+**Display:**
+- Indent markers: Enabled (shows tree structure)
+- Custom folder icons
+- Git status indicators
+
+**Behavior:**
+- Window picker: Disabled (opens in current window)
+- Shows git ignored files
+- Filters `.DS_Store` files
+
+## Customization
+
+### Change Position
+
+To move nvim-tree to the left side:
+
+```lua
+view = {
+  side = "left",
+}
+```
+
+### Adjust Width
+
+To change the width:
+
+```lua
+view = {
+  width = 40, -- or any number
+}
+```
+
+### Hide Dotfiles by Default
+
+To hide hidden files by default:
+
+```lua
+filters = {
+  dotfiles = true,
+  custom = { ".DS_Store", ".git" },
+}
+```
+
+<Tip>
+You can still toggle hidden files with `H` even if they're hidden by default.
+</Tip>
+
+### Custom Keybindings
+
+The `on_attach` function in the config defines custom keybindings:
+
+```lua
+local function on_attach(bufnr)
+  local api = require("nvim-tree.api")
+  
+  -- Your custom mappings here
+  vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
+  vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
+end
+```
+
+## Git Integration
+
+Nvim-tree shows git status with icons:
+
+| Icon | Status |
+|------|--------|
+| ✓ | Staged |
+| ✗ | Deleted |
+| ★ | Modified |
+| ✓ | Renamed |
+| ➜ | Untracked |
+| ✓ | Ignored |
+
+<Note>
+Git ignored files are shown by default in nvim-luffy. Toggle them with `I`.
+</Note>
+
+## Tips & Tricks
+
+### Quick File Creation Workflow
+1. Press `<leader>e` to open nvim-tree
+2. Navigate to the directory
+3. Press `a` to create a file
+4. Start editing immediately
+
+### Using with Telescope
+- Use Telescope (`<leader><leader>`) for finding files by name
+- Use nvim-tree (`<leader>e`) for browsing structure
+- They complement each other perfectly
+
+### Copying File Paths
+- `y` - Copy just the filename
+- `Y` - Copy relative path (useful for imports)
+- `gy` - Copy absolute path (useful for terminal commands)
+
+### Working with Multiple Files
+1. Mark files with `m`
+2. Perform operations on marked files
+3. Clear marks with `m` again
+
+<Tip>
+Disabled netrw (Vim's default file explorer) is automatically disabled to prevent conflicts.
+</Tip>

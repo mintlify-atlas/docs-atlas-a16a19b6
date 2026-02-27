@@ -1,0 +1,561 @@
+---
+title: "Nvim-cmp"
+description: "Intelligent autocompletion engine with multiple sources and snippet support"
+---
+
+Nvim-cmp is a powerful autocompletion plugin that provides intelligent suggestions as you type. It integrates with LSP, snippets, buffer text, and file paths to offer comprehensive completion options.
+
+## Overview
+
+Nvim-cmp offers:
+- LSP-based intelligent completions
+- Snippet expansion with LuaSnip
+- Buffer text completions
+- File path completions
+- VS Code-like pictograms
+- Customizable appearance and behavior
+- Multiple completion sources
+
+<Note>
+Nvim-cmp is configured to work seamlessly with LSP servers and loads only when you enter insert mode.
+</Note>
+
+## Keymaps
+
+### Completion Menu Navigation
+
+| Keymap | Description |
+|--------|-------------|
+| `<C-j>` | Next suggestion |
+| `<C-k>` | Previous suggestion |
+| `<Tab>` | Next suggestion or expand snippet |
+| `<C-Space>` | Trigger completion menu |
+| `<C-e>` | Close completion menu |
+| `<CR>` | Confirm selection |
+
+### Documentation Scrolling
+
+| Keymap | Description |
+|--------|-------------|
+| `<C-f>` | Scroll documentation down |
+| `<C-b>` | Scroll documentation up |
+
+### Snippet Navigation
+
+| Keymap | Description |
+|--------|-------------|
+| `<Tab>` | Jump to next snippet placeholder |
+| `<S-Tab>` | Jump to previous snippet placeholder |
+
+## How It Works
+
+<Steps>
+  <Step title="Enter insert mode">
+    As soon as you start typing, nvim-cmp begins analyzing your context.
+  </Step>
+  
+  <Step title="Sources provide suggestions">
+    Multiple sources contribute completions:
+    - LSP: Context-aware code completions
+    - LuaSnip: Pre-defined code snippets
+    - Buffer: Words from the current file
+    - Path: File and directory paths
+  </Step>
+  
+  <Step title="Select and confirm">
+    Navigate with `<C-j>`/`<C-k>` and confirm with `<CR>` or `<Tab>`.
+  </Step>
+</Steps>
+
+## Completion Sources
+
+### 1. LSP Completions
+
+Intelligent, context-aware suggestions from Language Servers:
+
+```typescript
+class User {
+  name: string;
+  email: string;
+  
+  getFullInfo() {
+    return this.  // ← LSP suggests: name, email, getFullInfo
+  }
+}
+```
+
+LSP completions include:
+- Methods and properties
+- Function parameters
+- Type information
+- Import suggestions
+- Documentation
+
+### 2. Snippet Completions
+
+Pre-defined code templates that expand:
+
+```javascript
+// Type "fun" and select the snippet
+function name(params) {
+  // cursor here
+}
+
+// Type "for" and select the snippet  
+for (let i = 0; i < array.length; i++) {
+  // cursor here
+}
+```
+
+Snippets include:
+- Common code patterns
+- Language constructs
+- Framework-specific templates
+- Custom snippets you define
+
+### 3. Buffer Completions
+
+Words from your current file:
+
+```javascript
+const userController = {};
+
+// Later in the file, type "user"
+// Suggests: userController
+```
+
+Useful for:
+- Variable names
+- Function names
+- Repeated terms
+
+### 4. Path Completions
+
+File and directory paths:
+
+```javascript
+import User from "./    // ← Suggests: models/, utils/, components/
+import User from "./models/   // ← Suggests: User.ts, Post.ts, etc.
+```
+
+```bash
+ls ~/    # ← Suggests directories in home
+```
+
+## Usage Examples
+
+### Basic Completion
+
+<Steps>
+  <Step title="Start typing">
+    ```javascript
+    const user = {
+      name: "John",
+      email: "john@example.com"
+    };
+    
+    user.   // ← Completion menu appears automatically
+    ```
+  </Step>
+  
+  <Step title="Navigate suggestions">
+    Use `<C-j>` and `<C-k>` to move through options.
+  </Step>
+  
+  <Step title="Confirm selection">
+    Press `<CR>` to accept the suggestion.
+  </Step>
+</Steps>
+
+### Using Snippets
+
+<Steps>
+  <Step title="Trigger a snippet">
+    ```javascript
+    // Type "for" and you'll see a snippet suggestion
+    for
+    ```
+  </Step>
+  
+  <Step title="Expand the snippet">
+    Press `<Tab>` to expand:
+    ```javascript
+    for (let i = 0; i < array.length; i++) {
+      
+    }
+    ```
+  </Step>
+  
+  <Step title="Navigate placeholders">
+    Use `<Tab>` to jump between placeholders:
+    - First placeholder: `i` (iterator name)
+    - Second placeholder: `array` (array name)
+    - Third placeholder: loop body
+  </Step>
+</Steps>
+
+### Import Path Completion
+
+<Steps>
+  <Step title="Start import statement">
+    ```typescript
+    import { User } from "./
+    ```
+  </Step>
+  
+  <Step title="See path suggestions">
+    Nvim-cmp shows available directories and files.
+  </Step>
+  
+  <Step title="Select path">
+    Navigate and confirm to complete the path:
+    ```typescript
+    import { User } from "./models/User";
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+Path completion works in any context, not just imports - strings in any language will trigger path suggestions.
+</Tip>
+
+### Manual Trigger
+
+If the completion menu doesn't appear automatically:
+
+```javascript
+user.   // ← No menu? Press <C-Space> to trigger it manually
+```
+
+## Configuration
+
+The nvim-cmp configuration is located at:
+```
+~/.config/nvim/lua/leyland/plugins/nvim-cmp.lua
+```
+
+### Current Settings
+
+```lua lua/leyland/plugins/nvim-cmp.lua
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
+  
+  mapping = cmp.mapping.preset.insert({
+    ["<C-k>"] = cmp.mapping.select_prev_item(),
+    ["<C-j>"] = cmp.mapping.select_next_item(),
+    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-f>"] = cmp.mapping.scroll_docs(4),
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<C-e>"] = cmp.mapping.abort(),
+    ["<CR>"] = cmp.mapping.confirm({ select = false }),
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+  }),
+  
+  sources = cmp.config.sources({
+    { name = "nvim_lsp" },
+    { name = "luasnip" },
+    { name = "buffer" },
+    { name = "path" },
+  }),
+  
+  formatting = {
+    format = lspkind.cmp_format({
+      maxwidth = 50,
+      ellipsis_char = "...",
+    }),
+  },
+})
+```
+
+### Dependencies
+
+Nvim-cmp relies on:
+- `hrsh7th/cmp-buffer` - Buffer completions
+- `hrsh7th/cmp-path` - Path completions
+- `L3MON4D3/LuaSnip` - Snippet engine
+- `saadparwaiz1/cmp_luasnip` - Snippet completions
+- `rafamadriz/friendly-snippets` - Snippet collection
+- `onsails/lspkind.nvim` - VS Code-like icons
+
+## Customization
+
+### Change Completion Behavior
+
+#### Auto-select First Item
+
+```lua
+mapping = {
+  ["<CR>"] = cmp.mapping.confirm({ select = true }),  -- Auto-select first item
+}
+```
+
+#### Disable Auto-popup
+
+```lua
+cmp.setup({
+  completion = {
+    autocomplete = false,  -- Only show menu on <C-Space>
+  },
+})
+```
+
+### Adjust Source Priority
+
+Sources are queried in order. To prioritize buffer over LSP:
+
+```lua
+sources = cmp.config.sources({
+  { name = "buffer" },     -- First
+  { name = "nvim_lsp" },   -- Second
+  { name = "luasnip" },
+  { name = "path" },
+})
+```
+
+### Limit Completion Items
+
+```lua
+sources = cmp.config.sources({
+  { name = "nvim_lsp", max_item_count = 20 },
+  { name = "buffer", max_item_count = 10 },
+})
+```
+
+### Custom Snippet Directories
+
+Add your own snippets:
+
+```lua
+require("luasnip.loaders.from_vscode").lazy_load({
+  paths = { "~/.config/nvim/snippets" }
+})
+```
+
+Create snippets in VS Code format:
+
+```json ~/.config/nvim/snippets/javascript.json
+{
+  "Console Log": {
+    "prefix": "clg",
+    "body": ["console.log($1);"],
+    "description": "Console log statement"
+  }
+}
+```
+
+### Window Appearance
+
+Customize the completion window:
+
+```lua
+window = {
+  completion = cmp.config.window.bordered(),
+  documentation = cmp.config.window.bordered(),
+}
+```
+
+## Advanced Features
+
+### Cmdline Completion
+
+Enable completion in Vim's command line:
+
+```lua
+-- '/' search completion
+cmp.setup.cmdline('/', {
+  sources = {
+    { name = 'buffer' }
+  }
+})
+
+-- ':' command completion
+cmp.setup.cmdline(':', {
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline' }
+  })
+})
+```
+
+### Git Completion
+
+Add git commit message completions:
+
+```lua
+-- Add cmp-git dependency
+dependencies = {
+  "petertriho/cmp-git",
+}
+
+-- In setup
+require("cmp_git").setup()
+
+sources = {
+  { name = "git" },  -- Add this
+  -- other sources...
+}
+```
+
+### Snippet Expansion Preview
+
+See snippet preview before expanding:
+
+```lua
+view = {
+  entries = { name = 'custom', selection_order = 'near_cursor' }
+}
+```
+
+## Understanding Icons
+
+Nvim-cmp shows icons indicating the source and type of each completion:
+
+| Icon | Meaning |
+|------|----------|
+| 󰊕 | Function |
+| 󰜢 | Variable |
+| 󰆧 | Method |
+| 󰙅 | Property |
+| 󰌗 | Class |
+| 󰕘 | Interface |
+| 󰈙 | Module |
+| 󰬐 | Snippet |
+| 󰬛 | Text (Buffer) |
+| 󰴉 | File Path |
+| 󰺮 | Keyword |
+
+<Note>
+Icons are provided by lspkind and require a Nerd Font to display correctly.
+</Note>
+
+## Troubleshooting
+
+### Completions Not Appearing
+
+<Steps>
+  <Step title="Check if LSP is running">
+    ```vim
+    :LspInfo
+    ```
+    Make sure an LSP server is attached to the buffer.
+  </Step>
+  
+  <Step title="Manually trigger">
+    Press `<C-Space>` to manually trigger completions.
+  </Step>
+  
+  <Step title="Check sources">
+    ```vim
+    :CmpStatus
+    ```
+    This shows which sources are active.
+  </Step>
+</Steps>
+
+### Snippets Not Working
+
+Ensure LuaSnip is loaded:
+
+```vim
+:lua print(vim.inspect(package.loaded["luasnip"]))
+```
+
+If nil, the snippet engine isn't loaded.
+
+### Completion Too Slow
+
+1. Reduce max items:
+```lua
+sources = {
+  { name = "nvim_lsp", max_item_count = 10 },
+}
+```
+
+2. Disable buffer source for large files:
+```lua
+sources = {
+  { 
+    name = "buffer",
+    option = {
+      max_indexed_line_length = 1024 * 4,  -- Skip long lines
+    }
+  },
+}
+```
+
+### Wrong Completions
+
+The LSP server determines completion quality. Check:
+- Is the right LSP server running? (`:LspInfo`)
+- Is your project properly configured? (tsconfig.json, etc.)
+
+## Tips & Tricks
+
+### Fast Navigation
+- Use `<C-j>`/`<C-k>` to navigate
+- Use `<Tab>` for both navigation and snippet expansion
+- Press `<C-e>` to dismiss and continue typing
+
+### Learning Snippets
+- Type common keywords and see what snippets exist
+- Check the snippet preview to understand placeholders
+- Create your own snippets for frequently-used patterns
+
+### Buffer Completions
+- Great for variable names you've used earlier
+- Helps maintain consistent naming
+- Works even when LSP isn't available
+
+### Path Completions
+- Works in any string, not just imports
+- Useful for config files
+- Press `<C-Space>` if it doesn't trigger automatically
+
+### Combining with LSP
+- Completions show function signatures
+- Hover documentation appears for selected items
+- Import statements are auto-added (if LSP supports it)
+
+<Tip>
+Nvim-cmp learns from your selections. Items you choose frequently will appear higher in the list.
+</Tip>
+
+## Common Workflows
+
+### Writing a New Function
+
+1. Type function name - buffer completions prevent typos
+2. Add parameters - LSP suggests types
+3. Inside function - LSP suggests available methods/properties
+4. Use snippets for common patterns (if, for, etc.)
+
+### Importing Modules
+
+1. Start typing import
+2. Use snippet for import template
+3. Path completion for file location
+4. LSP completion for exported members
+
+### Refactoring
+
+1. Rename variable
+2. Use buffer completion to ensure consistency
+3. LSP updates all references
+4. Completions reflect new name immediately
+
+<Note>
+Nvim-cmp is lazy-loaded and only activates when you enter insert mode, keeping Neovim's startup time fast.
+</Note>

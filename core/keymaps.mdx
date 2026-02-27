@@ -1,0 +1,171 @@
+---
+title: "Keymaps"
+description: "Custom keyboard shortcuts and mappings for efficient navigation and window management"
+---
+
+# Keymaps
+
+This page documents all custom keymaps configured in `lua/leyland/core/keymaps.lua`. These keybindings enhance productivity and provide intuitive shortcuts for common operations.
+
+## Leader Key
+
+```lua
+vim.g.mapleader = " "
+```
+
+The leader key is set to **Space**. The leader key acts as a prefix for custom commands, preventing conflicts with Neovim's built-in keybindings.
+
+<Note>
+This must be set before any keymaps that use `<leader>` are defined, otherwise those keymaps will use the default leader key (backslash).
+</Note>
+
+## Window Management
+
+These keymaps provide quick access to window splitting and management operations.
+
+### Window Splitting
+
+| Keymap | Mode | Action | Description |
+|--------|------|--------|-------------|
+| `<leader>\|` | Normal | `<C-w>v` | Split window vertically |
+| `<leader>sh` | Normal | `<C-w>s` | Split window horizontally |
+
+<Accordion title="Why these keybindings?">
+
+The vertical split uses the pipe character (`|`) which visually represents a vertical division, making it intuitive to remember. The horizontal split uses `sh` (split horizontal) for clarity.
+
+These are more memorable than the default Vim commands:
+- Default vertical split: `<C-w>v`
+- Default horizontal split: `<C-w>s`
+
+With these keymaps, you can simply think: **Space + | = vertical split**
+
+</Accordion>
+
+**Example workflow:**
+
+```lua
+-- 1. Open a file
+-- 2. Press <Space>| to create a vertical split
+-- 3. Press <Space>sh to create a horizontal split
+```
+
+<CodeGroup>
+
+```lua Vertical Split
+keymap.set("n", "<leader>|", "<C-w>v", { desc = "Split window vertically" })
+```
+
+```lua Horizontal Split
+keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
+```
+
+</CodeGroup>
+
+## Buffer Management
+
+Buffer management keymaps provide quick ways to close buffers without affecting window layouts.
+
+| Keymap | Mode | Command | Description |
+|--------|------|---------|-------------|
+| `<leader>bd` | Normal | `:bd<CR>` | Close current buffer |
+| `<leader>ba` | Normal | `:%bd<CR>` | Close all buffers |
+
+<Accordion title="Understanding Buffers vs Windows">
+
+**Buffers** are in-memory text representations of files. You can have multiple buffers open while only viewing some in windows.
+
+**Windows** are viewports that display buffers.
+
+- `:bd` (buffer delete) closes the buffer but keeps the window layout intact
+- `:%bd` closes all buffers at once
+
+These keymaps use mnemonic prefixes:
+- `bd` = **B**uffer **D**elete
+- `ba` = **B**uffer **A**ll (delete all)
+
+</Accordion>
+
+<CodeGroup>
+
+```lua Close Current Buffer
+keymap.set("n", "<leader>bd", "<cmd>bd<CR>", { desc = "Close buffer" })
+```
+
+```lua Close All Buffers
+keymap.set("n", "<leader>ba", "<cmd>%bd<CR>", { desc = "Close all buffers" })
+```
+
+</CodeGroup>
+
+<Tip>
+Use `<leader>bd` when you want to close a file but keep your window layout. The window remains open and will display the alternate buffer.
+</Tip>
+
+## Commented Out Keymaps
+
+The configuration file includes some commented-out keymaps that you might want to enable:
+
+### Quick Escape from Insert Mode
+
+```lua
+-- keymap.set("i", "jk", "<ESC>", {desc = "Exit Insert mode with jk"})
+```
+
+This popular keymap allows you to press `j` then `k` quickly in insert mode to return to normal mode, avoiding the reach to the Escape key.
+
+<Note>
+**Why it's commented out:** This can interfere if you actually need to type "jk" in sequence. If you enable it, you'll need to type slowly when "jk" appears in natural text.
+</Note>
+
+### Clear Search Highlights
+
+```lua
+-- keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
+```
+
+Clears search highlighting after you're done searching.
+
+<Note>
+**Why it's commented out:** This configuration uses an autocommand to automatically clear search highlights (see autocommands.mdx), making a manual keymap redundant.
+</Note>
+
+## Keymap Structure
+
+All keymaps follow this structure:
+
+```lua
+vim.keymap.set(mode, key, action, options)
+```
+
+- **mode**: The mode where the keymap is active (`"n"` = normal, `"i"` = insert, `"v"` = visual)
+- **key**: The key combination to trigger the action
+- **action**: The command or key sequence to execute
+- **options**: A table with additional options:
+  - `desc`: Description shown in which-key and other keymap viewers
+
+## Navigation Tips
+
+<Accordion title="Window Navigation (Built-in)">
+
+While not defined in this file, here are essential built-in window navigation commands:
+
+| Keymap | Action |
+|--------|--------|
+| `<C-w>h` | Move to left window |
+| `<C-w>j` | Move to window below |
+| `<C-w>k` | Move to window above |
+| `<C-w>l` | Move to right window |
+| `<C-w>w` | Cycle through windows |
+| `<C-w>q` | Close current window |
+
+</Accordion>
+
+## Summary
+
+The keymap configuration prioritizes:
+- **Mnemonic keybindings**: Easy to remember (e.g., `bd` = buffer delete)
+- **Leader key organization**: All custom keymaps use Space as leader
+- **Visual consistency**: Pipe character for vertical splits
+- **Buffer management**: Clean ways to close buffers without disrupting layout
+- **Minimal but effective**: Only includes essential keymaps, relying on plugins for advanced functionality
